@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id             Int              @id @default(autoincrement())
+  nombre         String           @unique @db.VarChar(50)
+  descripcion    String?          @db.VarChar(255)
+  activo         Boolean          @default(true)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now()) @updatedAt
+  roles_permisos roles_permisos[]
+  usuarios_roles usuarios_roles[]
+}
+
+model permisos {
+  id             Int              @id @default(autoincrement())
+  modulo         String           @db.VarChar(100)
+  accion         String           @db.VarChar(50)
+  descripcion    String?          @db.VarChar(255)
+  created_at     DateTime         @default(now())
+  roles_permisos roles_permisos[]
+
+  @@unique([modulo, accion])
+}
+
+model roles_permisos {
+  rol_id     Int
+  permiso_id Int
+  rol        roles    @relation(fields: [rol_id], references: [id], onDelete: Cascade)
+  permiso    permisos @relation(fields: [permiso_id], references: [id], onDelete: Cascade)
+
+  @@id([rol_id, permiso_id])
+}
+
+model usuarios {
+  id                       Int               @id @default(autoincrement())
+  uuid                     String            @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  nombre                   String            @db.VarChar(100)
+  apellido                 String            @db.VarChar(100)
+  email                    String            @unique @db.VarChar(150)
+  telefono                 String?           @db.VarChar(20)
+  password_hash            String            @db.VarChar(255)
+  foto_perfil              String?           @db.VarChar(500)
+  codigo_estudiantil       String?           @unique @db.VarChar(50)
+  universidad              String?           @db.VarChar(150)
+  saldo_billetera          Decimal           @default(0.00) @db.Decimal(12, 2)
+  activo                   Boolean           @default(true)
+  email_verificado         Boolean           @default(false)
+  created_at               DateTime          @default(now())
+  updated_at               DateTime          @default(now()) @updatedAt
+  usuarios_roles           usuarios_roles[]
+  vehiculos                vehiculos[]
+  viajes_pasajero          viajes[]          @relation("pasajero")
+  viajes_conductor         viajes[]          @relation("conductor")
+  transacciones            transacciones[]
+  calificaciones_dadas     calificaciones[]  @relation("calificador")
+  calificaciones_recibidas calificaciones[]  @relation("calificado")
+  notificaciones           notificaciones[]
+  rutas_favoritas          rutas_favoritas[]
+}
+
+model usuarios_roles {
+  usuario_id  Int
+  rol_id      Int
+  asignado_en DateTime @default(now())
+  usuario     usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  rol         roles    @relation(fields: [rol_id], references: [id], onDelete: Cascade)
+
+  @@id([usuario_id, rol_id])
+}
+
+model vehiculos {
+  id                  Int       @id @default(autoincrement())
+  conductor_id        Int
+  marca               String    @db.VarChar(80)
+  modelo              String    @db.VarChar(80)
+  anio                Int       @db.SmallInt
+  color               String    @db.VarChar(50)
+  placa               String    @unique @db.VarChar(20)
+  capacidad_pasajeros Int       @default(3) @db.SmallInt
+  foto_vehiculo       String?   @db.VarChar(500)
+  soat_vence          DateTime? @db.Date
+  tecnomecanica_vence DateTime? @db.Date
+  verificado          Boolean   @default(false)
+  activo              Boolean   @default(true)
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @default(now()) @updatedAt
+  conductor           usuarios  @relation(fields: [conductor_id], references: [id], onDelete: Cascade)
+  viajes              viajes[]
+}
+
+model rutas {
+  id                  Int               @id @default(autoincrement())
+  nombre              String?           @db.VarChar(150)
+  origen_descripcion  String            @db.VarChar(255)
+  origen_lat          Decimal           @db.Decimal(10, 7)
+  origen_lng          Decimal           @db.Decimal(10, 7)
+  destino_descripcion String            @db.VarChar(255)
+  destino_lat         Decimal           @db.Decimal(10, 7)
+  destino_lng         Decimal           @db.Decimal(10, 7)
+  distancia_km        Decimal?          @db.Decimal(8, 2)
+  duracion_min        Int?
+  created_at          DateTime          @default(now())
+  puntos_ruta         puntos_ruta[]
+  rutas_favoritas     rutas_favoritas[]
+  viajes              viajes[]
+}
+
+model puntos_ruta {
+  id          Int     @id @default(autoincrement())
+  ruta_id     Int
+  orden       Int     @db.SmallInt
+  descripcion String? @db.VarChar(255)
+  latitud     Decimal @db.Decimal(10, 7)
+  longitud    Decimal @db.Decimal(10, 7)
+  ruta        rutas   @relation(fields: [ruta_id], references: [id], onDelete: Cascade)
+}
+
+model rutas_favoritas {
+  id         Int      @id @default(autoincrement())
+  usuario_id Int
+  ruta_id    Int
+  alias      String?  @db.VarChar(100)
+  created_at DateTime @default(now())
+  usuario    usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  ruta       rutas    @relation(fields: [ruta_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, ruta_id])
+}
+
+model viajes {
+  id                 Int              @id @default(autoincrement())
+  uuid               String           @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  pasajero_id        Int
+  conductor_id       Int?
+  vehiculo_id        Int?
+  ruta_id            Int
+  estado             String           @default("pendiente") @db.VarChar(30)
+  precio             Decimal?         @db.Decimal(10, 2)
+  fecha_solicitud    DateTime         @default(now())
+  fecha_inicio       DateTime?
+  fecha_fin          DateTime?
+  motivo_cancelacion String?          @db.VarChar(255)
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @default(now()) @updatedAt
+  pasajero           usuarios         @relation("pasajero", fields: [pasajero_id], references: [id])
+  conductor          usuarios?        @relation("conductor", fields: [conductor_id], references: [id])
+  vehiculo           vehiculos?       @relation(fields: [vehiculo_id], references: [id])
+  ruta               rutas            @relation(fields: [ruta_id], references: [id])
+  pago               pagos?
+  calificaciones     calificaciones[]
+  notificaciones     notificaciones[]
+}
+
+model pagos {
+  id            Int             @id @default(autoincrement())
+  uuid          String          @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  viaje_id      Int             @unique
+  monto         Decimal         @db.Decimal(10, 2)
+  estado        String          @default("pendiente") @db.VarChar(30)
+  metodo        String          @default("billetera") @db.VarChar(50)
+  referencia_ext String?        @db.VarChar(255)
+  pagado_en     DateTime?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
+  viaje         viajes          @relation(fields: [viaje_id], references: [id])
+  transacciones transacciones[]
+}
+
+model transacciones {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int
+  tipo           String   @db.VarChar(30)
+  monto          Decimal  @db.Decimal(10, 2)
+  saldo_anterior Decimal  @db.Decimal(12, 2)
+  saldo_nuevo    Decimal  @db.Decimal(12, 2)
+  descripcion    String?  @db.VarChar(255)
+  pago_id        Int?
+  created_at     DateTime @default(now())
+  usuario        usuarios @relation(fields: [usuario_id], references: [id])
+  pago           pagos?   @relation(fields: [pago_id], references: [id])
+}
+
+model calificaciones {
+  id             Int      @id @default(autoincrement())
+  viaje_id       Int
+  calificador_id Int
+  calificado_id  Int
+  puntaje        Int      @db.SmallInt
+  comentario     String?  @db.VarChar(500)
+  created_at     DateTime @default(now())
+  viaje          viajes   @relation(fields: [viaje_id], references: [id])
+  calificador    usuarios @relation("calificador", fields: [calificador_id], references: [id])
+  calificado     usuarios @relation("calificado", fields: [calificado_id], references: [id])
+
+  @@unique([viaje_id, calificador_id])
+}
+
+model notificaciones {
+  id         Int      @id @default(autoincrement())
+  usuario_id Int
+  titulo     String   @db.VarChar(150)
+  mensaje    String
+  tipo       String   @default("info") @db.VarChar(30)
+  leida      Boolean  @default(false)
+  viaje_id   Int?
+  created_at DateTime @default(now())
+  usuario    usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  viaje      viajes?  @relation(fields: [viaje_id], references: [id])
+}
