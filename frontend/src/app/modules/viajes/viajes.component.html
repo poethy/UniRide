@@ -1,0 +1,86 @@
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-800">Viajes</h2>
+    <button *ngIf="!auth.hasRole('conductor')" (click)="showForm = !showForm" class="btn-primary">
+      + Solicitar viaje
+    </button>
+  </div>
+
+  <!-- Formulario nuevo viaje -->
+  <div *ngIf="showForm" class="card">
+    <h3 class="font-semibold text-gray-700 mb-4">Nuevo viaje</h3>
+    <form [formGroup]="form" (ngSubmit)="solicitar()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Ruta</label>
+        <select formControlName="ruta_id" class="input-field">
+          <option value="">Selecciona una ruta</option>
+          <option *ngFor="let ruta of rutas" [value]="ruta.id">
+            {{ ruta.origen_descripcion }} → {{ ruta.destino_descripcion }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Precio sugerido ($)</label>
+        <input formControlName="precio" type="number" min="0" class="input-field" placeholder="0.00">
+      </div>
+      <div class="flex gap-3">
+        <button type="submit" [disabled]="form.invalid" class="btn-primary">Solicitar</button>
+        <button type="button" (click)="showForm = false" class="btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flex gap-2 flex-wrap">
+    <button *ngFor="let e of ['','pendiente','aceptado','en_curso','finalizado','cancelado']"
+      (click)="filtroEstado = e; cargar()"
+      [class.ring-2]="filtroEstado === e"
+      [class.ring-primary-500]="filtroEstado === e"
+      class="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+      {{ e || 'Todos' }}
+    </button>
+  </div>
+
+  <!-- Lista de viajes -->
+  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando viajes...</div>
+
+  <div *ngIf="!loading && viajes.length === 0" class="card text-center py-12 text-gray-400">
+    No hay viajes para mostrar.
+  </div>
+
+  <div *ngIf="!loading" class="space-y-3">
+    <div *ngFor="let viaje of viajes" class="card hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between gap-4">
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
+            <span class="text-xs text-gray-400">#{{ viaje.id }}</span>
+          </div>
+          <p class="font-medium text-gray-800 truncate">
+            {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p *ngIf="viaje.precio" class="text-sm font-semibold text-green-600 mt-1">
+            ${{ viaje.precio | number:'1.2-2' }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 shrink-0">
+          <ng-container *ngIf="auth.hasRole('conductor')">
+            <button *ngIf="viaje.estado === 'aceptado'" (click)="cambiarEstado(viaje, 'iniciar')"
+              class="btn-primary text-xs py-1.5 px-3">Iniciar</button>
+            <button *ngIf="viaje.estado === 'en_curso'" (click)="cambiarEstado(viaje, 'finalizar')"
+              class="btn-primary text-xs py-1.5 px-3">Finalizar</button>
+          </ng-container>
+          <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
+            (click)="cancelar(viaje)"
+            class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

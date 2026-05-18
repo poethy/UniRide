@@ -1,0 +1,57 @@
+<div class="space-y-6">
+  <h2 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
+
+  <div class="card">
+    <input [(ngModel)]="busqueda" type="text" placeholder="Buscar por nombre, apellido o email..."
+      class="input-field max-w-md">
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando usuarios...</div>
+
+  <div *ngIf="!loading" class="card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-100 text-left text-gray-500 text-xs uppercase tracking-wider">
+          <th class="pb-3 pr-4">Usuario</th>
+          <th class="pb-3 pr-4">Universidad</th>
+          <th class="pb-3 pr-4">Roles</th>
+          <th class="pb-3 pr-4">Estado</th>
+          <th class="pb-3">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        <tr *ngFor="let u of filtrados" class="hover:bg-gray-50 transition-colors">
+          <td class="py-3 pr-4">
+            <div>
+              <p class="font-medium text-gray-800">{{ u.nombre }} {{ u.apellido }}</p>
+              <p class="text-gray-400 text-xs">{{ u.email }}</p>
+            </div>
+          </td>
+          <td class="py-3 pr-4 text-gray-600">{{ u.universidad || '—' }}</td>
+          <td class="py-3 pr-4">
+            <div class="flex flex-wrap gap-1">
+              <span *ngFor="let r of u.usuarios_roles"
+                class="px-2 py-0.5 rounded text-xs bg-primary-100 text-primary-700 font-medium">
+                {{ r.rol?.nombre }}
+              </span>
+            </div>
+          </td>
+          <td class="py-3 pr-4">
+            <span [class]="u.activo ? 'badge-finalizado' : 'badge-cancelado'">
+              {{ u.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="py-3">
+            <div class="flex gap-2">
+              <button (click)="asignarRol(u)" class="btn-secondary text-xs py-1 px-2">Rol</button>
+              <button *ngIf="u.activo" (click)="desactivar(u)" class="btn-danger text-xs py-1 px-2">Desactivar</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="filtrados.length === 0" class="text-center py-8 text-gray-400 text-sm">
+      No se encontraron usuarios.
+    </p>
+  </div>
+</div>

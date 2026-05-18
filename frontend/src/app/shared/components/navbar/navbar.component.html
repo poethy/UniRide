@@ -1,0 +1,32 @@
+<nav class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+  <a routerLink="/dashboard" class="flex items-center gap-2 font-bold text-xl text-primary-700">
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+    </svg>
+    UniRide
+  </a>
+
+  <div class="flex items-center gap-4">
+    <a routerLink="/notificaciones" class="relative text-gray-500 hover:text-primary-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z"/>
+      </svg>
+      <span *ngIf="noLeidas > 0"
+        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+        {{ noLeidas }}
+      </span>
+    </a>
+
+    <div class="flex items-center gap-2 text-sm">
+      <span class="text-gray-700 font-medium">{{ usuario?.nombre }}</span>
+      <button (click)="logout()" class="text-gray-400 hover:text-red-500 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>

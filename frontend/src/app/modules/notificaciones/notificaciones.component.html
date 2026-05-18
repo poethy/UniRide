@@ -1,0 +1,38 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-800">Notificaciones</h2>
+    <button (click)="marcarTodas()" class="btn-secondary text-sm">Marcar todas como leídas</button>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando...</div>
+
+  <div *ngIf="!loading && notificaciones.length === 0" class="card text-center py-12 text-gray-400">
+    No tienes notificaciones.
+  </div>
+
+  <div *ngIf="!loading" class="space-y-2">
+    <div *ngFor="let n of notificaciones"
+      (click)="marcarLeida(n)"
+      [class.opacity-50]="n.leida"
+      class="card flex items-start gap-4 cursor-pointer hover:shadow-md transition-all"
+      [class.border-l-4]="!n.leida"
+      [class.border-primary-500]="!n.leida">
+
+      <div [class]="'mt-0.5 ' + icono(n.tipo)">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+
+      <div class="flex-1">
+        <div class="flex items-center justify-between">
+          <p class="font-medium text-gray-800">{{ n.titulo }}</p>
+          <p class="text-xs text-gray-400">{{ n.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <p class="text-sm text-gray-600 mt-1">{{ n.mensaje }}</p>
+      </div>
+
+      <span *ngIf="!n.leida" class="w-2 h-2 rounded-full bg-primary-500 mt-1.5 shrink-0"></span>
+    </div>
+  </div>
+</div>

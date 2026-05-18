@@ -1,0 +1,74 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-800">Mis Vehículos</h2>
+    <button (click)="abrirFormulario()" class="btn-primary">+ Agregar vehículo</button>
+  </div>
+
+  <div *ngIf="showForm" class="card">
+    <h3 class="font-semibold text-gray-700 mb-4">{{ editando ? 'Editar' : 'Nuevo' }} vehículo</h3>
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+        <input formControlName="marca" class="input-field" placeholder="Ej: Chevrolet">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+        <input formControlName="modelo" class="input-field" placeholder="Ej: Spark">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Año</label>
+        <input formControlName="anio" type="number" class="input-field" placeholder="2020">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+        <input formControlName="color" class="input-field" placeholder="Blanco">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Placa</label>
+        <input formControlName="placa" class="input-field" placeholder="ABC123">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Capacidad pasajeros</label>
+        <input formControlName="capacidad_pasajeros" type="number" class="input-field">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Vence SOAT</label>
+        <input formControlName="soat_vence" type="date" class="input-field">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Vence Tecnomecánica</label>
+        <input formControlName="tecnomecanica_vence" type="date" class="input-field">
+      </div>
+      <div class="col-span-2 flex gap-3 pt-2">
+        <button type="submit" [disabled]="form.invalid" class="btn-primary">Guardar</button>
+        <button type="button" (click)="showForm = false" class="btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando...</div>
+
+  <div *ngIf="!loading && vehiculos.length === 0" class="card text-center py-12 text-gray-400">
+    No tienes vehículos registrados.
+  </div>
+
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div *ngFor="let v of vehiculos" class="card hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="font-bold text-gray-800">{{ v.marca }} {{ v.modelo }} {{ v.anio }}</p>
+          <p class="text-sm text-gray-500 mt-1">Placa: <span class="font-medium">{{ v.placa }}</span> · {{ v.color }}</p>
+          <p class="text-sm text-gray-500">Capacidad: {{ v.capacidad_pasajeros }} pasajeros</p>
+          <div class="flex gap-2 mt-2">
+            <span *ngIf="v.verificado" class="badge-finalizado">Verificado</span>
+            <span *ngIf="!v.verificado" class="badge-pendiente">Sin verificar</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button (click)="abrirFormulario(v)" class="btn-secondary text-xs py-1.5 px-3">Editar</button>
+          <button (click)="eliminar(v)" class="btn-danger text-xs py-1.5 px-3">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
