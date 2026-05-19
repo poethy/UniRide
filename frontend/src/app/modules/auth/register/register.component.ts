@@ -13,7 +13,8 @@ export class RegisterComponent {
     this.form = this.fb.group({
       nombre:              ['', Validators.required],
       apellido:            ['', Validators.required],
-      email:               ['', [Validators.required, Validators.email]],
+      // Accept bare username (juan.perez) OR full email (juan.perez@uam.edu.co)
+      email:               ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+\-]+(@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})?$/)]],
       password:            ['', [Validators.required, Validators.minLength(6)]],
       universidad:         [''],
       codigo_estudiantil:  [''],
@@ -24,7 +25,12 @@ export class RegisterComponent {
   submit(): void {
     if (this.form.invalid) return;
     this.loading = true;
-    this.auth.register(this.form.value).subscribe({
+    const payload = { ...this.form.value };
+    // Auto-append domain when user typed only the username part
+    if (!payload.email.includes('@')) {
+      payload.email = `${payload.email}@uam.edu.co`;
+    }
+    this.auth.register(payload).subscribe({
       next: () => {
         Swal.fire({ icon: 'success', title: '¡Cuenta creada!', text: 'Ya puedes iniciar sesión.' });
         this.router.navigate(['/auth/login']);
