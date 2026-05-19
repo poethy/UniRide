@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 export class LoginComponent {
   form: FormGroup;
   loading = false;
+  tab: 'pasajero' | 'conductor' = 'pasajero';
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
