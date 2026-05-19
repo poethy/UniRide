@@ -455,4 +455,53 @@
 
   /* Keep cards from getting too wide and hide any overflow */
   main { overflow-x: hidden; }
+
+  /* ── Calificaciones ── */
+
+  /* Header grid: stack rating card full-width, button below */
+  main .ur-cal-header {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .ur-cal-action {
+    align-items: stretch !important;
+    width: 100%;
+  }
+  /* Button fills full width (overrides ur-cta-btn align-self:flex-start) */
+  .ur-cal-action .ur-cta-btn {
+    width: 100% !important;
+    align-self: auto !important;
+    box-sizing: border-box !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Review cards: 2-col compact grid (avatar | info), date row spans full width */
+  main .ur-cal-review {
+    display: grid !important;
+    grid-template-columns: 44px 1fr !important;
+    padding: 16px !important;
+    gap: 8px 12px !important;
+  }
+  /* Avatar: shrink to match new column */
+  main .ur-cal-review > div:first-child {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    border-radius: 12px !important;
+    align-self: flex-start !important;
+  }
+  /* Date + trip link: span full width below avatar+info */
+  main .ur-cal-review > div:last-child {
+    grid-column: 1 / -1 !important;
+    text-align: left !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-top: 8px !important;
+    border-top: 1px solid var(--border) !important;
+  }
+  /* Name */
+  main .ur-cal-review [style*="font-size:18px"] { font-size: 14px !important; }
+  /* Comment */
+  main .ur-cal-review [style*="font-size:15px"] { font-size: 12.5px !important; }
 }
