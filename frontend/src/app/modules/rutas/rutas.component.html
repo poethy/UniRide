@@ -5,14 +5,14 @@
     <div style="font-size:44px;font-weight:700;color:var(--text);letter-spacing:-.035em;line-height:1;margin-top:8px;font-family:'Space Grotesk','Plus Jakarta Sans',sans-serif">Rutas</div>
     <div style="font-size:14px;color:var(--text-2);margin-top:8px">Las que repites cada semana. Pídelas con un clic.</div>
   </div>
-  <button (click)="showForm = !showForm"
+  <button (click)="showForm = !showForm" class="ur-cta-btn"
     style="padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:16px;display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer">
-    <span style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00">
+    <span class="ur-cta-icon" style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00;flex-shrink:0">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
     </span>
     <div>
-      <div style="font-size:10px;opacity:.55;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Crear trayecto</div>
-      <div style="font-size:15px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif">Nueva ruta</div>
+      <div class="ur-cta-eyebrow" style="font-size:10px;opacity:.55;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Crear trayecto</div>
+      <div class="ur-cta-label" style="font-size:15px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif">Nueva ruta</div>
     </div>
   </button>
 </div>
@@ -87,7 +87,7 @@
 
     <!-- Hero card: first route -->
     <ng-container *ngFor="let ruta of (rutas | slice:0:1)">
-      <div style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px;position:relative;overflow:hidden">
+      <div class="ur-ruta-card" style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px;position:relative;overflow:hidden">
         <div style="position:relative">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">
@@ -127,7 +127,7 @@
         </div>
       </div>
     </ng-container>
-    <div *ngIf="rutas.length === 0"
+    <div *ngIf="rutas.length === 0" class="ur-ruta-card"
       style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
       <div style="font-size:18px;font-weight:700;color:var(--text-3);font-family:'Space Grotesk',sans-serif">No hay rutas aún</div>
       <div style="font-size:13px;color:var(--text-3);margin-top:6px">Crea tu primera ruta para empezar</div>
@@ -135,7 +135,7 @@
 
     <!-- Second card: second route or suggestion -->
     <ng-container *ngFor="let ruta of (rutas | slice:1:2)">
-      <div style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px">
+      <div class="ur-ruta-card" style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px">
         <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:10px">
           {{ esFavorita(ruta) ? 'Favorita' : 'Ruta' }}
         </div>
@@ -159,7 +159,7 @@
         </div>
       </div>
     </ng-container>
-    <div *ngIf="rutas.length < 2"
+    <div *ngIf="rutas.length < 2" class="ur-rutas-suggestion"
       style="padding:24px;border-radius:24px;background:var(--uam-orange-100);min-height:280px;display:flex;flex-direction:column">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--uam-orange-700)" stroke-width="2"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/><path d="M9 12l2 2 4-4"/></svg>
       <div style="font-size:11px;font-weight:800;color:var(--uam-orange-700);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif;margin-top:22px">Sugerencia</div>
@@ -174,7 +174,7 @@
     </div>
 
     <!-- Add card: always shown -->
-    <div (click)="showForm = true"
+    <div (click)="showForm = true" class="ur-ruta-add"
       style="padding:24px;border-radius:24px;border:2px dashed var(--border-strong);min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;cursor:pointer">
       <div style="width:60px;height:60px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -188,7 +188,7 @@
   </div>
 
   <!-- Additional routes (3+) -->
-  <div style="padding:16px 36px 36px;display:grid;grid-template-columns:1fr 1fr;gap:14px"
+  <div class="ur-rutas-extra" style="padding:16px 36px 36px;display:grid;grid-template-columns:1fr 1fr;gap:14px"
     *ngIf="(rutas | slice:2).length > 0">
     <div *ngFor="let ruta of (rutas | slice:2)"
       style="padding:20px;border-radius:20px;background:var(--bg-soft);display:flex;align-items:flex-start;justify-content:space-between;gap:12px">

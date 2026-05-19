@@ -247,6 +247,12 @@
     transform: translateX(0) !important;
   }
 
+  /* Rutas: suggestion hidden, route cards & add card full-width */
+  .ur-rutas-suggestion { display: none !important; }
+  .ur-ruta-card,
+  .ur-ruta-add         { grid-column: 1 / -1 !important; min-height: auto !important; }
+  .ur-rutas-extra      { grid-template-columns: 1fr !important; }
+
   /* Dashboard stats: mini trips pill visible, viajes card hidden */
   .ur-mini-trips  { display: inline-flex !important; align-items: center; }
   .ur-stat-viajes { display: none !important; }
