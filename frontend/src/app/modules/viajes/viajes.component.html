@@ -73,9 +73,16 @@
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
               Seguimiento
             </button>
-            <!-- Calificar (finalizado, solo pasajero) -->
+            <!-- Calificar: pasajero califica conductor -->
             <button
               *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
+              (click)="calificarViaje(viaje)"
+              class="text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg py-1.5 px-3 flex items-center gap-1 transition-colors">
+              <span>★</span> Calificar
+            </button>
+            <!-- Calificar: conductor califica pasajero -->
+            <button
+              *ngIf="auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.pasajero && viaje.conductor?.id === auth.currentUser?.id"
               (click)="calificarViaje(viaje)"
               class="text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg py-1.5 px-3 flex items-center gap-1 transition-colors">
               <span>★</span> Calificar

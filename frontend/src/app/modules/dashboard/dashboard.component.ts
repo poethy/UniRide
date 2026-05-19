@@ -189,7 +189,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   calificarViaje(viaje: Viaje): void {
-    this.calificacionesSvc.abrirModalCalificacion(viaje, () => this.cargarDatos());
+    const rol = this.esConductor ? 'pasajero' : 'conductor';
+    this.calificacionesSvc.abrirModalCalificacion(viaje, rol, () => this.cargarDatos());
   }
 
   private limpiarTracking(): void {

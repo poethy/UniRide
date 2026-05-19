@@ -9,10 +9,12 @@ import Swal from 'sweetalert2';
 @Component({ standalone: false, selector: 'app-calificaciones', templateUrl: './calificaciones.component.html' })
 export class CalificacionesComponent implements OnInit {
   calificaciones$!: Observable<Calificacion[]>;
+  calificacionesDadas$!: Observable<Calificacion[]>;
   promedio: number | null = null;
   total = 0;
   form: FormGroup;
   showForm = false;
+  tab: 'recibidas' | 'dadas' = 'recibidas';
 
   constructor(private fb: FormBuilder, public auth: AuthService, private svc: CalificacionesService) {
     this.form = this.fb.group({
@@ -27,7 +29,9 @@ export class CalificacionesComponent implements OnInit {
     const userId = this.auth.currentUser?.id;
     if (!userId) return;
     this.calificaciones$ = this.svc.calificaciones$;
+    this.calificacionesDadas$ = this.svc.calificacionesDadas$;
     this.svc.listarDeUsuario(userId).subscribe();
+    this.svc.listarDadasPorUsuario(userId).subscribe();
     this.svc.promedio(userId).subscribe({ next: r => { this.promedio = r.data.promedio; this.total = r.data.total; } });
   }
 
@@ -39,12 +43,16 @@ export class CalificacionesComponent implements OnInit {
         this.showForm = false;
         this.form.reset({ puntaje: 5 });
         const userId = this.auth.currentUser?.id;
-        if (userId) this.svc.listarDeUsuario(userId).subscribe();
+        if (userId) {
+          this.svc.listarDeUsuario(userId).subscribe();
+          this.svc.listarDadasPorUsuario(userId).subscribe();
+        }
       },
       error: err => Swal.fire({ icon: 'error', title: 'Error', text: err.error?.message }),
     });
   }
 
+  get esPasajero(): boolean { return this.auth.currentUser?.roles?.includes('pasajero') ?? false; }
   get promedioRedondeado(): number { return this.promedio ? Math.round(this.promedio) : 0; }
   estrellas(n: number): number[] { return Array(n).fill(0); }
   estrellasVacias(n: number): number[] { return Array(5 - n).fill(0); }

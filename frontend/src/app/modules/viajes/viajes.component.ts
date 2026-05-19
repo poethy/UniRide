@@ -119,7 +119,8 @@ export class ViajesComponent implements OnInit {
   }
 
   calificarViaje(viaje: Viaje): void {
-    this.calificacionesSvc.abrirModalCalificacion(viaje, () => this.cargar());
+    const rol = this.auth.hasRole('conductor') ? 'pasajero' : 'conductor';
+    this.calificacionesSvc.abrirModalCalificacion(viaje, rol, () => this.cargar());
   }
 
   verSeguimiento(viaje: Viaje): void {

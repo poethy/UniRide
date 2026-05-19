@@ -117,6 +117,8 @@ export interface Calificacion {
   comentario?: string;
   created_at: string;
   calificador?: Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil'>;
+  calificado?:  Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil'>;
+  viaje?:       Pick<Viaje, 'id'>;
 }
 
 export interface Notificacion {

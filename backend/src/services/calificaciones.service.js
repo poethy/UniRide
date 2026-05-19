@@ -42,6 +42,17 @@ async function yaCalificoViaje(calificador_id, viaje_id) {
   return !!found;
 }
 
+async function listarDadasPorUsuario(calificador_id) {
+  return prisma.calificaciones.findMany({
+    where: { calificador_id },
+    include: {
+      calificado: { select: { id: true, nombre: true, apellido: true, foto_perfil: true } },
+      viaje: { select: { id: true } },
+    },
+    orderBy: { created_at: 'desc' },
+  });
+}
+
 async function promedioUsuario(usuario_id) {
   const result = await prisma.calificaciones.aggregate({
     where: { calificado_id: usuario_id },
@@ -51,4 +62,4 @@ async function promedioUsuario(usuario_id) {
   return { promedio: result._avg.puntaje, total: result._count };
 }
 
-module.exports = { listarDeUsuario, crear, promedioUsuario, yaCalificoViaje };
+module.exports = { listarDeUsuario, listarDadasPorUsuario, crear, promedioUsuario, yaCalificoViaje };

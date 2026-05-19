@@ -15,6 +15,12 @@ const crear = async (req, res, next) => {
   }
 };
 
+const listarDadas = async (req, res, next) => {
+  try {
+    return ok(res, await svc.listarDadasPorUsuario(Number(req.params.usuario_id)));
+  } catch (err) { next(err); }
+};
+
 const promedio = async (req, res, next) => {
   try { return ok(res, await svc.promedioUsuario(Number(req.params.usuario_id))); }
   catch (err) { next(err); }
@@ -26,4 +32,4 @@ const yaCalifique = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { listar, crear, promedio, yaCalifique };
+module.exports = { listar, listarDadas, crear, promedio, yaCalifique };
