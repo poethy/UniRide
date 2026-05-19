@@ -11,7 +11,7 @@ const handleErrors = (req, res, next) => {
 const registerRules = [
   body('nombre').trim().notEmpty().withMessage('El nombre es requerido'),
   body('apellido').trim().notEmpty().withMessage('El apellido es requerido'),
-  body('email').isEmail().withMessage('Email inválido').normalizeEmail(),
+  body('email').isEmail().withMessage('Email inválido').bail().trim().toLowerCase(),
   body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
   body('universidad').optional().trim(),
   body('codigo_estudiantil').optional().trim(),
@@ -19,7 +19,7 @@ const registerRules = [
 ];
 
 const loginRules = [
-  body('email').isEmail().withMessage('Email inválido').normalizeEmail(),
+  body('email').isEmail().withMessage('Email inválido').bail().trim().toLowerCase(),
   body('password').notEmpty().withMessage('La contraseña es requerida'),
   handleErrors,
 ];

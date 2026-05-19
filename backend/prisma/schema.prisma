@@ -1,3 +1,12 @@
+// Schema sincronizado contra `uniride database.sql` (raíz del repo).
+//
+// NOTAS DE DRIFT:
+// - Prisma no soporta CHECK constraints declarativos. Las restricciones de
+//   dominio (estado, metodo, tipo, saldo >= 0, puntaje 1..5) se encuentran en
+//   `prisma/migrations/manual_constraints.sql` y deben aplicarse manualmente
+//   o tras un `prisma migrate dev`.
+// - Los `@@index` declarados aquí sí se gestionan vía `prisma migrate`.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -156,6 +165,11 @@ model viajes {
   pago               pagos?
   calificaciones     calificaciones[]
   notificaciones     notificaciones[]
+
+  @@index([estado])
+  @@index([conductor_id])
+  @@index([pasajero_id])
+  @@index([fecha_solicitud])
 }
 
 model pagos {
@@ -185,6 +199,8 @@ model transacciones {
   created_at     DateTime @default(now())
   usuario        usuarios @relation(fields: [usuario_id], references: [id])
   pago           pagos?   @relation(fields: [pago_id], references: [id])
+
+  @@index([usuario_id, created_at])
 }
 
 model calificaciones {
@@ -213,4 +229,7 @@ model notificaciones {
   created_at DateTime @default(now())
   usuario    usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
   viaje      viajes?  @relation(fields: [viaje_id], references: [id])
+
+  @@index([usuario_id, leida])
+  @@index([usuario_id, created_at])
 }

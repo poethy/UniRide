@@ -2,6 +2,9 @@ const prisma = require('../utils/prisma');
 const { fail } = require('../utils/response');
 
 const permit = (modulo, accion) => async (req, res, next) => {
+  if (!req.user || !req.user.id) {
+    return fail(res, 'No autenticado', 401);
+  }
   const userId = req.user.id;
 
   const result = await prisma.$queryRaw`

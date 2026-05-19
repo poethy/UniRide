@@ -7,7 +7,7 @@ const include = {
   ruta:      { include: { puntos_ruta: { orderBy: { orden: 'asc' } } } },
 };
 
-async function listar(filtros = {}) {
+async function listar(filtros = {}, pag = null) {
   let where = {};
 
   if (filtros.pasajero_id) {
@@ -35,7 +35,21 @@ async function listar(filtros = {}) {
     if (filtros.estado) where.estado = filtros.estado;
   }
 
-  return prisma.viajes.findMany({ where, include, orderBy: { fecha_solicitud: 'desc' } });
+  if (pag && pag.paginated) {
+    const [items, total] = await Promise.all([
+      prisma.viajes.findMany({
+        where, include, orderBy: { fecha_solicitud: 'desc' },
+        skip: pag.skip, take: pag.take,
+      }),
+      prisma.viajes.count({ where }),
+    ]);
+    return { items, total };
+  }
+
+  const take = pag ? pag.take : 500;
+  return prisma.viajes.findMany({
+    where, include, orderBy: { fecha_solicitud: 'desc' }, take,
+  });
 }
 
 async function obtener(id) {
@@ -60,14 +74,20 @@ async function solicitar(pasajero_id, data) {
 async function aceptar(id, conductor_id, vehiculo_id) {
   const v = await prisma.viajes.findUnique({ where: { id } });
   if (!v) throw { status: 404, message: 'Viaje no encontrado' };
-  if (v.estado !== 'pendiente') throw { status: 409, message: 'El viaje no está pendiente' };
   if (v.pasajero_id === conductor_id) throw { status: 400, message: 'No puedes conducir tu propio viaje' };
 
-  return prisma.viajes.update({
-    where: { id },
+  // Compare-and-swap: solo aceptar si sigue pendiente y sin conductor.
+  // Evita race condition entre dos conductores aceptando el mismo viaje.
+  const result = await prisma.viajes.updateMany({
+    where: { id, estado: 'pendiente', conductor_id: null },
     data: { conductor_id, vehiculo_id, estado: 'aceptado' },
-    include,
   });
+
+  if (result.count === 0) {
+    throw { status: 409, message: 'El viaje ya no está disponible' };
+  }
+
+  return prisma.viajes.findUnique({ where: { id }, include });
 }
 
 async function iniciar(id, conductorId) {
@@ -96,9 +116,13 @@ async function finalizar(id, conductorId) {
       include,
     });
 
-    if (viaje.precio && viaje.precio > 0) {
+    if (viaje.precio && Number(viaje.precio) > 0) {
       const pasajero = await tx.usuarios.findUnique({ where: { id: v.pasajero_id } });
       const conductor = await tx.usuarios.findUnique({ where: { id: conductorId } });
+
+      if (Number(pasajero.saldo_billetera) < Number(viaje.precio)) {
+        throw { status: 402, message: 'Saldo insuficiente del pasajero para cobrar el viaje' };
+      }
 
       await tx.pagos.create({
         data: {
