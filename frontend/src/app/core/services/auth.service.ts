@@ -53,6 +53,15 @@ export class AuthService {
     return this.currentUser?.roles?.includes(role) ?? false;
   }
 
+  refreshUser(): Observable<ApiResponse<Usuario>> {
+    return this.http.get<ApiResponse<Usuario>>(`${this.api}/me`).pipe(
+      tap(res => {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(res.data));
+        this.userSubject.next(res.data);
+      })
+    );
+  }
+
   private storedUser(): Usuario | null {
     const raw = localStorage.getItem(this.USER_KEY);
     return raw ? JSON.parse(raw) : null;

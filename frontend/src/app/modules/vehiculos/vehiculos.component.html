@@ -46,29 +46,28 @@
     </form>
   </div>
 
-  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando...</div>
-
-  <div *ngIf="!loading && vehiculos.length === 0" class="card text-center py-12 text-gray-400">
-    No tienes vehículos registrados.
-  </div>
-
-  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div *ngFor="let v of vehiculos" class="card hover:shadow-md transition-shadow">
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="font-bold text-gray-800">{{ v.marca }} {{ v.modelo }} {{ v.anio }}</p>
-          <p class="text-sm text-gray-500 mt-1">Placa: <span class="font-medium">{{ v.placa }}</span> · {{ v.color }}</p>
-          <p class="text-sm text-gray-500">Capacidad: {{ v.capacidad_pasajeros }} pasajeros</p>
-          <div class="flex gap-2 mt-2">
-            <span *ngIf="v.verificado" class="badge-finalizado">Verificado</span>
-            <span *ngIf="!v.verificado" class="badge-pendiente">Sin verificar</span>
+  <ng-container *ngIf="vehiculos$ | async as lista">
+    <div *ngIf="lista.length === 0" class="card text-center py-12 text-gray-400">
+      No tienes vehículos registrados.
+    </div>
+    <div *ngIf="lista.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div *ngFor="let v of lista" class="card hover:shadow-md transition-shadow">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="font-bold text-gray-800">{{ v.marca }} {{ v.modelo }} {{ v.anio }}</p>
+            <p class="text-sm text-gray-500 mt-1">Placa: <span class="font-medium">{{ v.placa }}</span> · {{ v.color }}</p>
+            <p class="text-sm text-gray-500">Capacidad: {{ v.capacidad_pasajeros }} pasajeros</p>
+            <div class="flex gap-2 mt-2">
+              <span *ngIf="v.verificado" class="badge-finalizado">Verificado</span>
+              <span *ngIf="!v.verificado" class="badge-pendiente">Sin verificar</span>
+            </div>
           </div>
-        </div>
-        <div class="flex gap-2">
-          <button (click)="abrirFormulario(v)" class="btn-secondary text-xs py-1.5 px-3">Editar</button>
-          <button (click)="eliminar(v)" class="btn-danger text-xs py-1.5 px-3">Eliminar</button>
+          <div class="flex gap-2">
+            <button (click)="abrirFormulario(v)" class="btn-secondary text-xs py-1.5 px-3">Editar</button>
+            <button (click)="eliminar(v)" class="btn-danger text-xs py-1.5 px-3">Eliminar</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </div>

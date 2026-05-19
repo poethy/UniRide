@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { RutasService } from '../../core/services/rutas.service';
 import { Ruta } from '../../core/models';
 import Swal from 'sweetalert2';
 
 @Component({ standalone: false, selector: 'app-rutas', templateUrl: './rutas.component.html' })
 export class RutasComponent implements OnInit {
-  rutas: Ruta[] = [];
+  rutas$!: Observable<Ruta[]>;
   favoritas: any[] = [];
   form: FormGroup;
   showForm = false;
-  loading = true;
 
   constructor(private fb: FormBuilder, private svc: RutasService) {
     this.form = this.fb.group({
@@ -26,11 +26,13 @@ export class RutasComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { this.cargar(); }
+  ngOnInit(): void {
+    this.rutas$ = this.svc.rutas$;
+    this.cargar();
+  }
 
   cargar(): void {
-    this.loading = true;
-    this.svc.listar().subscribe({ next: r => { this.rutas = r.data; this.loading = false; } });
+    this.svc.listar().subscribe();
     this.svc.favoritos().subscribe({ next: r => this.favoritas = r.data });
   }
 

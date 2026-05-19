@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const { fail } = require('../utils/response');
-
-const prisma = new PrismaClient();
 
 const permit = (modulo, accion) => async (req, res, next) => {
   const userId = req.user.id;

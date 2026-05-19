@@ -45,6 +45,15 @@
         <input formControlName="codigo_estudiantil" type="text" placeholder="Ej: 1234567" class="input-field">
       </div>
 
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de cuenta</label>
+        <select formControlName="rol_id" class="input-field">
+          <option [value]="3">Pasajero</option>
+          <option [value]="2">Conductor</option>
+          <option [value]="1">Administrador</option>
+        </select>
+      </div>
+
       <button type="submit" [disabled]="loading" class="btn-primary w-full py-3 text-base mt-2">
         <span *ngIf="!loading">Crear cuenta</span>
         <span *ngIf="loading" class="flex items-center justify-center gap-2">

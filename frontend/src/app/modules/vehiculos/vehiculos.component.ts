@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { VehiculosService } from '../../core/services/vehiculos.service';
 import { Vehiculo } from '../../core/models';
@@ -7,11 +8,10 @@ import Swal from 'sweetalert2';
 
 @Component({ standalone: false, selector: 'app-vehiculos', templateUrl: './vehiculos.component.html' })
 export class VehiculosComponent implements OnInit {
-  vehiculos: Vehiculo[] = [];
+  vehiculos$!: Observable<Vehiculo[]>;
   form: FormGroup;
   editando: Vehiculo | null = null;
   showForm = false;
-  loading = true;
 
   constructor(private fb: FormBuilder, public auth: AuthService, private svc: VehiculosService) {
     this.form = this.fb.group({
@@ -26,14 +26,13 @@ export class VehiculosComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { this.cargar(); }
+  ngOnInit(): void {
+    this.vehiculos$ = this.svc.vehiculos$;
+    this.svc.listar(this.auth.currentUser?.id).subscribe();
+  }
 
   cargar(): void {
-    this.loading = true;
-    this.svc.listar(this.auth.currentUser?.id).subscribe({
-      next: r => { this.vehiculos = r.data; this.loading = false; },
-      error: () => { this.loading = false; },
-    });
+    this.svc.listar(this.auth.currentUser?.id).subscribe();
   }
 
   abrirFormulario(v?: Vehiculo): void {

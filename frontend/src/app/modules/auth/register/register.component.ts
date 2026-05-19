@@ -17,6 +17,7 @@ export class RegisterComponent {
       password:            ['', [Validators.required, Validators.minLength(6)]],
       universidad:         [''],
       codigo_estudiantil:  [''],
+      rol_id:              [3, Validators.required],
     });
   }
 

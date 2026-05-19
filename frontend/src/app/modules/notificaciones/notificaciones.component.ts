@@ -1,31 +1,29 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { NotificacionesService } from '../../core/services/notificaciones.service';
 import { Notificacion } from '../../core/models';
 import Swal from 'sweetalert2';
 
 @Component({ standalone: false, selector: 'app-notificaciones', templateUrl: './notificaciones.component.html' })
 export class NotificacionesComponent implements OnInit {
-  notificaciones: Notificacion[] = [];
-  loading = true;
+  notificaciones$!: Observable<Notificacion[]>;
 
   constructor(private svc: NotificacionesService) {}
 
-  ngOnInit(): void { this.cargar(); }
-
-  cargar(): void {
-    this.loading = true;
-    this.svc.listar().subscribe({ next: r => { this.notificaciones = r.data; this.loading = false; } });
+  ngOnInit(): void {
+    this.notificaciones$ = this.svc.notificaciones$;
+    this.svc.listar().subscribe();
   }
 
   marcarLeida(n: Notificacion): void {
     if (n.leida) return;
-    this.svc.marcarLeida(n.id).subscribe({ next: () => { n.leida = true; } });
+    this.svc.marcarLeida(n.id).subscribe({ next: () => this.svc.listar().subscribe() });
   }
 
   marcarTodas(): void {
     this.svc.marcarTodasLeidas().subscribe({
       next: () => {
-        this.notificaciones.forEach(n => n.leida = true);
+        this.svc.listar().subscribe();
         Swal.fire({ icon: 'success', title: 'Listo', timer: 1000, showConfirmButton: false });
       },
     });

@@ -8,16 +8,24 @@ import { ApiResponse, Notificacion } from '../models';
 @Injectable({ providedIn: 'root' })
 export class NotificacionesService {
   private api = `${environment.apiUrl}/notificaciones`;
-  private noLeidasSubject = new BehaviorSubject<number>(0);
-  noLeidas$ = this.noLeidasSubject.asObservable();
+
+  private _notificaciones$ = new BehaviorSubject<Notificacion[]>([]);
+  readonly notificaciones$ = this._notificaciones$.asObservable();
+
+  private _noLeidas$ = new BehaviorSubject<number>(0);
+  readonly noLeidas$ = this._noLeidas$.asObservable();
 
   constructor(private http: HttpClient) {}
 
   listar() {
     return this.http.get<ApiResponse<Notificacion[]>>(this.api).pipe(
-      tap(res => this.noLeidasSubject.next(res.data.filter(n => !n.leida).length))
+      tap(res => {
+        this._notificaciones$.next(res.data);
+        this._noLeidas$.next(res.data.filter(n => !n.leida).length);
+      })
     );
   }
-  marcarLeida(id: number)    { return this.http.patch<ApiResponse<Notificacion>>(`${this.api}/${id}/leer`, {}); }
-  marcarTodasLeidas()        { return this.http.patch<ApiResponse<any>>(`${this.api}/leer-todas`, {}); }
+
+  marcarLeida(id: number)  { return this.http.patch<ApiResponse<Notificacion>>(`${this.api}/${id}/leer`, {}); }
+  marcarTodasLeidas()      { return this.http.patch<ApiResponse<any>>(`${this.api}/leer-todas`, {}); }
 }

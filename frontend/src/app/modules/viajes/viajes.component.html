@@ -42,45 +42,45 @@
     </button>
   </div>
 
-  <!-- Lista de viajes -->
-  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando viajes...</div>
+  <!-- Lista reactiva -->
+  <ng-container *ngIf="viajes$ | async as lista">
+    <div *ngIf="lista.length === 0" class="card text-center py-12 text-gray-400">
+      No hay viajes para mostrar.
+    </div>
 
-  <div *ngIf="!loading && viajes.length === 0" class="card text-center py-12 text-gray-400">
-    No hay viajes para mostrar.
-  </div>
+    <div class="space-y-3">
+      <div *ngFor="let viaje of lista" class="card hover:shadow-md transition-shadow">
+        <div class="flex items-start justify-between gap-4">
 
-  <div *ngIf="!loading" class="space-y-3">
-    <div *ngFor="let viaje of viajes" class="card hover:shadow-md transition-shadow">
-      <div class="flex items-start justify-between gap-4">
-
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-1">
-            <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
-            <span class="text-xs text-gray-400">#{{ viaje.id }}</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
+              <span class="text-xs text-gray-400">#{{ viaje.id }}</span>
+            </div>
+            <p class="font-medium text-gray-800 truncate">
+              {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
+            </p>
+            <p class="text-xs text-gray-400 mt-1">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p *ngIf="viaje.precio" class="text-sm font-semibold text-green-600 mt-1">
+              ${{ viaje.precio | number:'1.2-2' }}
+            </p>
           </div>
-          <p class="font-medium text-gray-800 truncate">
-            {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
-          </p>
-          <p class="text-xs text-gray-400 mt-1">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
-          <p *ngIf="viaje.precio" class="text-sm font-semibold text-green-600 mt-1">
-            ${{ viaje.precio | number:'1.2-2' }}
-          </p>
-        </div>
 
-        <div class="flex flex-col gap-2 shrink-0">
-          <ng-container *ngIf="auth.hasRole('conductor')">
-            <button *ngIf="viaje.estado === 'aceptado'" (click)="cambiarEstado(viaje, 'iniciar')"
-              class="btn-primary text-xs py-1.5 px-3">Iniciar</button>
-            <button *ngIf="viaje.estado === 'en_curso'" (click)="cambiarEstado(viaje, 'finalizar')"
-              class="btn-primary text-xs py-1.5 px-3">Finalizar</button>
-          </ng-container>
-          <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
-            (click)="cancelar(viaje)"
-            class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
-        </div>
+          <div class="flex flex-col gap-2 shrink-0">
+            <ng-container *ngIf="auth.hasRole('conductor')">
+              <button *ngIf="viaje.estado === 'aceptado'" (click)="cambiarEstado(viaje, 'iniciar')"
+                class="btn-primary text-xs py-1.5 px-3">Iniciar</button>
+              <button *ngIf="viaje.estado === 'en_curso'" (click)="cambiarEstado(viaje, 'finalizar')"
+                class="btn-primary text-xs py-1.5 px-3">Finalizar</button>
+            </ng-container>
+            <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
+              (click)="cancelar(viaje)"
+              class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
+          </div>
 
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 
 </div>

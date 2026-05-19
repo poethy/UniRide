@@ -1,17 +1,16 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const bcrypt = require('bcryptjs');
 const { sign } = require('../utils/jwt');
 
-const prisma = new PrismaClient();
-
-const ROL_PASAJERO = 3;
+const ROLES_VALIDOS = [1, 2, 3];
 
 async function register(data) {
-  const { nombre, apellido, email, password, telefono, universidad, codigo_estudiantil } = data;
+  const { nombre, apellido, email, password, telefono, universidad, codigo_estudiantil, rol_id } = data;
 
   const existe = await prisma.usuarios.findUnique({ where: { email } });
   if (existe) throw { status: 409, message: 'El email ya está registrado' };
 
+  const rolAsignado = ROLES_VALIDOS.includes(Number(rol_id)) ? Number(rol_id) : 3;
   const password_hash = await bcrypt.hash(password, 10);
 
   const usuario = await prisma.usuarios.create({
@@ -23,7 +22,7 @@ async function register(data) {
       telefono,
       universidad,
       codigo_estudiantil,
-      usuarios_roles: { create: { rol_id: ROL_PASAJERO } },
+      usuarios_roles: { create: { rol_id: rolAsignado } },
     },
     select: { id: true, uuid: true, nombre: true, apellido: true, email: true, created_at: true },
   });

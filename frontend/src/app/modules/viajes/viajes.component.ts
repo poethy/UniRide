@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ViajesService } from '../../core/services/viajes.service';
 import { RutasService } from '../../core/services/rutas.service';
@@ -8,11 +9,10 @@ import Swal from 'sweetalert2';
 
 @Component({ standalone: false, selector: 'app-viajes', templateUrl: './viajes.component.html' })
 export class ViajesComponent implements OnInit {
-  viajes: Viaje[] = [];
+  viajes$!: Observable<Viaje[]>;
   rutas: Ruta[] = [];
   form: FormGroup;
   filtroEstado = '';
-  loading = true;
   showForm = false;
 
   constructor(
@@ -28,26 +28,26 @@ export class ViajesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.viajes$ = this.viajesSvc.viajes$;
     this.cargar();
     this.rutasSvc.listar().subscribe(r => this.rutas = r.data);
   }
 
   cargar(): void {
-    this.loading = true;
     const userId = this.auth.currentUser?.id;
     const filtro = this.auth.hasRole('conductor')
       ? { conductor_id: userId, ...(this.filtroEstado ? { estado: this.filtroEstado } : {}) }
       : { pasajero_id: userId, ...(this.filtroEstado ? { estado: this.filtroEstado } : {}) };
-
-    this.viajesSvc.listar(filtro).subscribe({
-      next: r => { this.viajes = r.data; this.loading = false; },
-      error: () => { this.loading = false; },
-    });
+    this.viajesSvc.listar(filtro).subscribe();
   }
 
   solicitar(): void {
     if (this.form.invalid) return;
-    this.viajesSvc.solicitar(this.form.value).subscribe({
+    const payload = {
+      ruta_id: Number(this.form.value.ruta_id),
+      precio:  this.form.value.precio ? Number(this.form.value.precio) : undefined,
+    };
+    this.viajesSvc.solicitar(payload).subscribe({
       next: () => {
         Swal.fire({ icon: 'success', title: 'Viaje solicitado', timer: 1500, showConfirmButton: false });
         this.showForm = false;

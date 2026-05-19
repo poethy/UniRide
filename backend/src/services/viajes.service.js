@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../utils/prisma');
 
 const include = {
   pasajero:  { select: { id: true, nombre: true, apellido: true, foto_perfil: true } },
@@ -26,7 +24,12 @@ async function obtener(id) {
 async function solicitar(pasajero_id, data) {
   const { ruta_id, precio } = data;
   return prisma.viajes.create({
-    data: { pasajero_id, ruta_id, precio, estado: 'pendiente' },
+    data: {
+      pasajero_id,
+      ruta_id: parseInt(ruta_id, 10),
+      precio: precio ? parseFloat(precio) : null,
+      estado: 'pendiente',
+    },
     include,
   });
 }

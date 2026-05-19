@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { CalificacionesService } from '../../core/services/calificaciones.service';
 import { Calificacion } from '../../core/models';
@@ -7,12 +8,11 @@ import Swal from 'sweetalert2';
 
 @Component({ standalone: false, selector: 'app-calificaciones', templateUrl: './calificaciones.component.html' })
 export class CalificacionesComponent implements OnInit {
-  calificaciones: Calificacion[] = [];
+  calificaciones$!: Observable<Calificacion[]>;
   promedio: number | null = null;
   total = 0;
   form: FormGroup;
   showForm = false;
-  loading = true;
 
   constructor(private fb: FormBuilder, public auth: AuthService, private svc: CalificacionesService) {
     this.form = this.fb.group({
@@ -26,7 +26,8 @@ export class CalificacionesComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.auth.currentUser?.id;
     if (!userId) return;
-    this.svc.listarDeUsuario(userId).subscribe({ next: r => { this.calificaciones = r.data; this.loading = false; } });
+    this.calificaciones$ = this.svc.calificaciones$;
+    this.svc.listarDeUsuario(userId).subscribe();
     this.svc.promedio(userId).subscribe({ next: r => { this.promedio = r.data.promedio; this.total = r.data.total; } });
   }
 
@@ -37,6 +38,8 @@ export class CalificacionesComponent implements OnInit {
         Swal.fire({ icon: 'success', title: '¡Calificación enviada!', timer: 1500, showConfirmButton: false });
         this.showForm = false;
         this.form.reset({ puntaje: 5 });
+        const userId = this.auth.currentUser?.id;
+        if (userId) this.svc.listarDeUsuario(userId).subscribe();
       },
       error: err => Swal.fire({ icon: 'error', title: 'Error', text: err.error?.message }),
     });

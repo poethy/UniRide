@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../utils/prisma');
 
 async function listar() {
   return prisma.rutas.findMany({ include: { puntos_ruta: { orderBy: { orden: 'asc' } } } });

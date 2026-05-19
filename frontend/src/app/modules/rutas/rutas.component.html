@@ -54,13 +54,12 @@
     </form>
   </div>
 
-  <div *ngIf="loading" class="text-center py-12 text-gray-400">Cargando rutas...</div>
+  <ng-container *ngIf="rutas$ | async as rutas">
+    <div *ngIf="rutas.length === 0" class="card text-center py-12 text-gray-400">
+      No hay rutas registradas.
+    </div>
 
-  <div *ngIf="!loading && rutas.length === 0" class="card text-center py-12 text-gray-400">
-    No hay rutas registradas.
-  </div>
-
-  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div *ngFor="let ruta of rutas" class="card hover:shadow-md transition-shadow">
       <div class="flex items-start justify-between gap-2">
         <div class="flex-1 min-w-0">
@@ -86,4 +85,5 @@
       </div>
     </div>
   </div>
+  </ng-container>
 </div>

@@ -4,7 +4,11 @@
     <h2 class="text-2xl font-bold text-gray-800">
       Hola, {{ usuario?.nombre }} 👋
     </h2>
-    <p class="text-gray-500 text-sm mt-1">Aquí tienes un resumen de tu actividad</p>
+    <p class="text-gray-500 text-sm mt-1">
+      <ng-container *ngIf="auth.hasRole('conductor')">Gestiona tus viajes y vehículos</ng-container>
+      <ng-container *ngIf="auth.hasRole('administrador')">Panel de administración de UniRide</ng-container>
+      <ng-container *ngIf="!auth.hasRole('conductor') && !auth.hasRole('administrador')">Aquí tienes un resumen de tu actividad</ng-container>
+    </p>
   </div>
 
   <!-- Tarjetas de resumen -->
@@ -18,7 +22,9 @@
         </svg>
       </div>
       <div>
-        <p class="text-sm text-gray-500">Saldo billetera</p>
+        <p class="text-sm text-gray-500">
+          {{ auth.hasRole('conductor') ? 'Ganancias acumuladas' : 'Saldo billetera' }}
+        </p>
         <p class="text-2xl font-bold text-gray-800">${{ usuario?.saldo_billetera | number:'1.2-2' }}</p>
       </div>
     </div>
@@ -31,7 +37,9 @@
         </svg>
       </div>
       <div>
-        <p class="text-sm text-gray-500">Total viajes</p>
+        <p class="text-sm text-gray-500">
+          {{ auth.hasRole('conductor') ? 'Viajes realizados' : 'Total viajes' }}
+        </p>
         <p class="text-2xl font-bold text-gray-800">{{ totalViajes }}</p>
       </div>
     </div>
@@ -55,17 +63,39 @@
   <div class="card">
     <h3 class="font-semibold text-gray-700 mb-4">Acciones rápidas</h3>
     <div class="flex flex-wrap gap-3">
-      <a routerLink="/viajes" class="btn-primary">Solicitar viaje</a>
-      <a routerLink="/rutas" class="btn-secondary">Ver rutas</a>
-      <a routerLink="/pagos" class="btn-secondary">Recargar billetera</a>
-      <a *ngIf="auth.hasRole('conductor')" routerLink="/vehiculos" class="btn-secondary">Mis vehículos</a>
+
+      <!-- Pasajero -->
+      <ng-container *ngIf="!auth.hasRole('conductor') && !auth.hasRole('administrador')">
+        <a routerLink="/viajes" class="btn-primary">Solicitar viaje</a>
+        <a routerLink="/rutas" class="btn-secondary">Ver rutas</a>
+        <a routerLink="/pagos" class="btn-secondary">Recargar billetera</a>
+      </ng-container>
+
+      <!-- Conductor -->
+      <ng-container *ngIf="auth.hasRole('conductor')">
+        <a routerLink="/viajes" class="btn-primary">Ver mis viajes</a>
+        <a routerLink="/vehiculos" class="btn-secondary">Mis vehículos</a>
+        <a routerLink="/rutas" class="btn-secondary">Mis rutas</a>
+        <a routerLink="/calificaciones" class="btn-secondary">Mis calificaciones</a>
+      </ng-container>
+
+      <!-- Administrador -->
+      <ng-container *ngIf="auth.hasRole('administrador')">
+        <a routerLink="/viajes" class="btn-primary">Ver viajes</a>
+        <a routerLink="/usuarios" class="btn-secondary">Gestionar usuarios</a>
+        <a routerLink="/reportes" class="btn-secondary">Ver reportes</a>
+        <a routerLink="/vehiculos" class="btn-secondary">Vehículos</a>
+      </ng-container>
+
     </div>
   </div>
 
   <!-- Viajes recientes -->
   <div class="card">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-gray-700">Viajes recientes</h3>
+      <h3 class="font-semibold text-gray-700">
+        {{ auth.hasRole('conductor') ? 'Últimos viajes gestionados' : 'Viajes recientes' }}
+      </h3>
       <a routerLink="/viajes" class="text-primary-600 text-sm hover:underline">Ver todos</a>
     </div>
 
@@ -73,7 +103,8 @@
 
     <div *ngIf="!loading && viajesRecientes.length === 0"
       class="text-center py-8 text-gray-400 text-sm">
-      No tienes viajes aún. ¡Solicita tu primer viaje!
+      <ng-container *ngIf="auth.hasRole('conductor')">No tienes viajes asignados aún.</ng-container>
+      <ng-container *ngIf="!auth.hasRole('conductor')">No tienes viajes aún. ¡Solicita tu primer viaje!</ng-container>
     </div>
 
     <div *ngIf="!loading && viajesRecientes.length > 0" class="divide-y divide-gray-100">
@@ -83,6 +114,9 @@
             {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
           </p>
           <p class="text-xs text-gray-400 mt-0.5">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p *ngIf="auth.hasRole('conductor') && viaje.pasajero" class="text-xs text-gray-500 mt-0.5">
+            Pasajero: {{ viaje.pasajero?.nombre }} {{ viaje.pasajero?.apellido }}
+          </p>
         </div>
         <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
       </div>

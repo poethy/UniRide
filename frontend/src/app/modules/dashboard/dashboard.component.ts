@@ -10,7 +10,7 @@ export class DashboardComponent implements OnInit {
   viajesRecientes: Viaje[] = [];
   totalViajes = 0;
   viajesActivos = 0;
-  loading = true;
+  loading = false;
 
   constructor(
     public auth: AuthService,
