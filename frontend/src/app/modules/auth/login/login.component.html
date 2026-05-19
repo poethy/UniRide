@@ -48,93 +48,111 @@
   </div>
 
   <!-- RIGHT: form panel -->
-  <div style="padding:60px;display:flex;align-items:center;justify-content:center">
+  <div class="ur-auth-form" style="padding:52px 48px;display:flex;align-items:center;justify-content:center;background:var(--bg)">
     <div style="width:100%;max-width:380px">
 
-      <!-- Eyebrow + title -->
-      <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Accede a tu cuenta</div>
-      <div style="font-size:34px;font-weight:700;color:var(--text);letter-spacing:-.025em;margin-top:10px;line-height:1.05;font-family:'Space Grotesk',sans-serif">
-        Bienvenido<br>de vuelta.
+      <!-- UAM institution badge -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+        <img src="logo-uam.png" alt="UAM" style="width:34px;height:34px;object-fit:contain">
+        <div style="font-size:9.5px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;line-height:1.5">
+          Fundación U. Autónoma<br>de las Américas
+        </div>
+      </div>
+
+      <!-- uni·ride wordmark -->
+      <div style="font-size:54px;font-weight:700;letter-spacing:-.04em;font-family:'Space Grotesk',sans-serif;color:var(--text);line-height:1">
+        uni<span style="color:var(--accent)">·</span>ride
+      </div>
+
+      <!-- Tagline -->
+      <div style="font-size:15px;color:var(--text-2);line-height:1.55;margin-top:12px;margin-bottom:28px;max-width:310px">
+        Movilidad segura entre estudiantes de la UAM. Comparte ruta, ahorra y llega a clase a tiempo.
       </div>
 
       <!-- Role selector -->
-      <div style="margin-top:24px;padding:4px;background:var(--bg-soft);border-radius:14px;display:flex;gap:2px">
+      <div style="padding:4px;background:var(--bg-soft);border-radius:14px;display:flex;gap:2px;margin-bottom:20px">
         <button type="button" (click)="tab='pasajero'"
-          style="flex:1;padding:10px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;transition:all .15s"
+          style="flex:1;padding:10px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:700;border:none;cursor:pointer;transition:all .15s"
           [style.background]="tab==='pasajero' ? 'var(--surface)' : 'transparent'"
           [style.boxShadow]="tab==='pasajero' ? 'var(--sh-1)' : 'none'"
           [style.color]="tab==='pasajero' ? 'var(--text)' : 'var(--text-3)'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" [attr.stroke-width]="tab==='pasajero' ? '2.2' : '1.8'">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          Pasajero
+          Soy pasajero
         </button>
         <button type="button" (click)="tab='conductor'"
-          style="flex:1;padding:10px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;transition:all .15s"
+          style="flex:1;padding:10px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:700;border:none;cursor:pointer;transition:all .15s"
           [style.background]="tab==='conductor' ? 'var(--surface)' : 'transparent'"
           [style.boxShadow]="tab==='conductor' ? 'var(--sh-1)' : 'none'"
           [style.color]="tab==='conductor' ? 'var(--text)' : 'var(--text-3)'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" [attr.stroke-width]="tab==='conductor' ? '2.2' : '1.8'">
-            <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
-          Conductor
+          Soy conductor
         </button>
       </div>
 
       <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="submit()" style="margin-top:24px">
+      <form [formGroup]="form" (ngSubmit)="submit()">
 
         <!-- Email -->
-        <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Correo institucional</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+        <div style="margin-bottom:14px">
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Correo institucional</div>
+          <div style="display:flex;align-items:center;padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent;transition:border-color .15s"
             [style.border-color]="form.get('email')?.invalid && form.get('email')?.touched ? 'var(--danger)' : 'transparent'">
-            <input formControlName="email" type="email" placeholder="correo@uam.edu.co"
-              style="flex:1;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
-            <span style="font-size:11.5px;color:var(--text-3);font-weight:600">@uam.edu.co</span>
+            <input formControlName="email" type="email" placeholder="sofia.henao"
+              style="flex:1;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+            <span style="font-size:13px;color:var(--text-3);font-weight:500;flex-shrink:0">@uam.edu.co</span>
           </div>
           <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
             style="font-size:12px;color:var(--danger);margin-top:4px;font-weight:600">Ingresa un email válido</div>
         </div>
 
         <!-- Password -->
-        <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Contraseña</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+        <div style="margin-bottom:6px">
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Contraseña</div>
+          <div style="display:flex;align-items:center;padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
             [style.border-color]="form.get('password')?.invalid && form.get('password')?.touched ? 'var(--danger)' : 'transparent'">
             <input formControlName="password" type="password" placeholder="••••••••"
-              style="flex:1;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+              style="flex:1;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
           </div>
           <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
             style="font-size:12px;color:var(--danger);margin-top:4px;font-weight:600">La contraseña es requerida</div>
         </div>
 
-        <!-- Forgot -->
-        <div style="display:flex;justify-content:flex-end;margin-top:12px;margin-bottom:22px">
-          <span style="font-size:12.5px;font-weight:700;color:var(--text-2);cursor:pointer">
-            ¿Olvidaste tu contraseña? <span style="color:var(--accent)">→</span>
+        <!-- Forgot password -->
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;margin-bottom:22px">
+          <span style="font-size:12.5px;font-weight:700;color:var(--accent);cursor:pointer">
+            ¿Olvidaste tu contraseña?
           </span>
         </div>
 
-        <!-- CTA -->
+        <!-- Submit CTA -->
         <button type="submit" [disabled]="form.invalid || loading"
-          style="width:100%;padding:14px 22px 14px 14px;background:var(--text);color:var(--bg);border-radius:16px;display:flex;align-items:center;gap:14px;border:none;cursor:pointer;font-family:inherit;opacity:1;transition:opacity .15s"
+          style="width:100%;padding:15px;background:var(--brand);color:#fff;border-radius:13px;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s"
           [style.opacity]="form.invalid || loading ? '0.5' : '1'">
-          <span style="width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00;flex-shrink:0">
-            <svg *ngIf="!loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            <svg *ngIf="loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="animation:spin 1s linear infinite">
-              <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".25"/>
-              <path d="M21 12a9 9 0 00-9-9" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <div style="font-size:17px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif;flex:1">
-            {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
-          </div>
+          <span>{{ loading ? 'Ingresando...' : 'Iniciar sesión' }}</span>
+          <svg *ngIf="!loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          <svg *ngIf="loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite">
+            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".25"/>
+            <path d="M21 12a9 9 0 00-9-9" stroke-linecap="round"/>
+          </svg>
         </button>
 
       </form>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin:22px 0">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:12px;color:var(--text-3);font-weight:600">o continúa con</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- Institutional account -->
+      <button type="button"
+        style="width:100%;padding:13px 16px;background:transparent;border:1.5px solid var(--border);border-radius:13px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:inherit;transition:background .15s">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span style="font-size:14px;font-weight:700;color:var(--text)">Cuenta institucional UAM</span>
+      </button>
 
       <!-- Register link -->
       <div style="text-align:center;margin-top:24px;font-size:13.5px;color:var(--text-2)">

@@ -361,6 +361,11 @@
   .ur-auth-left {
     display: none !important;
   }
+  /* Auth form panel: reduce padding on mobile */
+  .ur-auth-form {
+    padding: 44px 28px 40px !important;
+    align-items: flex-start !important;
+  }
 
   /* Module pages: collapse all multi-column grids → 2-col */
   main [style*="grid-template-columns"] {
