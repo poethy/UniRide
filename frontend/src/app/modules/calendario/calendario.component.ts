@@ -18,11 +18,27 @@ export class CalendarioComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,listWeek',
     },
+    buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', list: 'Agenda' },
+    dayMaxEvents: true,
     events: [],
     eventColor: '#2563eb',
   };
 
-  constructor(private viajesSvc: ViajesService, private auth: AuthService) {}
+  constructor(private viajesSvc: ViajesService, private auth: AuthService) {
+    // On mobile: simplify toolbar so title has room to breathe
+    if (typeof window !== 'undefined' && window.innerWidth <= 767) {
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        headerToolbar: {
+          left:   'prev,next',
+          center: 'title',
+          right:  'today',
+        },
+        initialView: 'listMonth',
+        buttonText: { today: 'Hoy', list: 'Lista', month: 'Mes', week: 'Sem' },
+      };
+    }
+  }
 
   ngOnInit(): void {
     const userId = this.auth.currentUser?.id;

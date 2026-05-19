@@ -206,6 +206,98 @@
 }
 
 /* ═══════════════════════════════════════════════
+   FULLCALENDAR — UniRide design system overrides
+   ═══════════════════════════════════════════════ */
+
+.fc { font-family: var(--font-ui) !important; }
+
+/* Toolbar */
+.fc .fc-toolbar.fc-header-toolbar { padding: 14px 18px; margin-bottom: 0; gap: 8px; }
+.fc .fc-toolbar-title {
+  font-family: var(--font-display) !important;
+  font-size: 17px !important; font-weight: 700 !important;
+  letter-spacing: -0.02em; color: var(--text) !important;
+  text-transform: capitalize;
+}
+
+/* Buttons — replace FC blue with our palette */
+.fc .fc-button {
+  font-family: var(--font-ui) !important;
+  font-size: 12.5px !important; font-weight: 700 !important;
+  border-radius: var(--r-sm) !important;
+  padding: 6px 13px !important; box-shadow: none !important;
+  outline: none !important; transition: all 0.15s !important;
+}
+.fc .fc-button-primary {
+  background: var(--bg-soft) !important;
+  border: 1.5px solid var(--border-strong) !important;
+  color: var(--text-2) !important;
+  &:hover:not(:disabled) { background: var(--bg-tint) !important; color: var(--text) !important; }
+  &:focus { box-shadow: none !important; }
+}
+.fc .fc-button-primary.fc-button-active {
+  background: var(--text) !important;
+  border-color: transparent !important; color: var(--bg) !important;
+}
+.fc .fc-prev-button .fc-icon,
+.fc .fc-next-button .fc-icon { font-size: 14px !important; }
+
+/* Day column headers */
+.fc .fc-col-header-cell-cushion {
+  font-size: 10.5px !important; font-weight: 800 !important;
+  letter-spacing: 0.07em !important; text-transform: uppercase !important;
+  color: var(--text-3) !important; text-decoration: none !important;
+  padding: 8px 4px !important;
+}
+
+/* Day numbers */
+.fc .fc-daygrid-day-number {
+  font-size: 12.5px !important; font-weight: 600 !important;
+  color: var(--text-2) !important; text-decoration: none !important;
+  padding: 6px 8px !important;
+}
+
+/* Today highlight */
+.fc .fc-day-today { background: var(--uam-orange-100) !important; }
+.fc .fc-day-today .fc-daygrid-day-number {
+  color: var(--uam-orange-700) !important; font-weight: 800 !important;
+}
+
+/* Grid borders */
+.fc-theme-standard td,
+.fc-theme-standard th { border-color: var(--border) !important; }
+.fc-theme-standard .fc-scrollgrid { border-color: var(--border) !important; }
+
+/* Events */
+.fc .fc-event {
+  border-radius: 5px !important; border: none !important;
+  padding: 2px 5px !important; font-size: 10.5px !important;
+  font-weight: 700 !important; cursor: pointer;
+}
+.fc .fc-event-title { font-weight: 700 !important; }
+
+/* List view */
+.fc .fc-list-day-cushion { background: var(--bg-soft) !important; }
+.fc .fc-list-day-text,
+.fc .fc-list-day-side-text {
+  font-size: 12px !important; font-weight: 700 !important;
+  color: var(--text-2) !important; text-decoration: none !important;
+}
+.fc .fc-list-event-title { font-size: 13px !important; font-weight: 600 !important; }
+.fc .fc-list-empty { padding: 32px 0 !important; }
+.fc .fc-list-empty-cushion {
+  font-size: 14px !important; color: var(--text-3) !important; font-weight: 600 !important;
+}
+
+@media (max-width: 767px) {
+  .fc .fc-toolbar.fc-header-toolbar { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
+  .fc .fc-toolbar-title            { font-size: 15px !important; }
+  .fc .fc-button                   { font-size: 11.5px !important; padding: 5px 10px !important; }
+  .fc .fc-col-header-cell-cushion  { font-size: 9px !important; padding: 5px 2px !important; }
+  .fc .fc-daygrid-day-number       { font-size: 10.5px !important; padding: 4px 5px !important; }
+}
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE — MOBILE  (≤ 767 px)
    ═══════════════════════════════════════════════ */
 @media (max-width: 767px) {
