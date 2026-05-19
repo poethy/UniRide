@@ -1,6 +1,9 @@
 const svc = require('../services/viajes.service');
 const { ok, created, fail } = require('../utils/response');
 
+// Almacén en memoria de ubicaciones activas: Map<viajeId, {lat, lng, timestamp}>
+const ubicacionesActivas = new Map();
+
 const listar = async (req, res, next) => {
   try {
     const { pasajero_id, conductor_id, estado } = req.query;
@@ -59,4 +62,33 @@ const cancelar = async (req, res, next) => {
   }
 };
 
-module.exports = { listar, obtener, solicitar, aceptar, iniciar, finalizar, cancelar };
+const actualizarUbicacion = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { lat, lng } = req.body;
+    if (lat === undefined || lng === undefined)
+      return fail(res, 'lat y lng son requeridos', 400);
+
+    const viaje = await svc.obtener(id);
+    if (viaje.conductor_id !== req.user.id)
+      return fail(res, 'Solo el conductor puede actualizar la ubicación', 403);
+    if (viaje.estado !== 'en_curso')
+      return fail(res, 'El viaje no está en curso', 409);
+
+    ubicacionesActivas.set(id, { lat: parseFloat(lat), lng: parseFloat(lng), timestamp: Date.now() });
+    return ok(res, { updated: true });
+  } catch (err) {
+    if (err.status) return fail(res, err.message, err.status);
+    next(err);
+  }
+};
+
+const obtenerUbicacion = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const ubicacion = ubicacionesActivas.get(id) ?? null;
+    return ok(res, ubicacion);
+  } catch (err) { next(err); }
+};
+
+module.exports = { listar, obtener, solicitar, aceptar, iniciar, finalizar, cancelar, actualizarUbicacion, obtenerUbicacion };

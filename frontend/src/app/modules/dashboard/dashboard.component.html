@@ -1,5 +1,116 @@
 <div class="space-y-6">
 
+  <!-- ═══════════════════════════════════════════════════════════
+       SEGUIMIENTO EN CURSO (aparece automáticamente si hay viaje activo)
+  ════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="viajeEnCurso">
+    <div class="rounded-2xl overflow-hidden border border-indigo-200 shadow-sm bg-white">
+
+      <!-- Banner de estado -->
+      <div class="bg-indigo-600 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+          <p class="text-white font-semibold text-sm">Viaje en curso</p>
+        </div>
+        <span class="text-indigo-200 text-xs">
+          {{ viajeEnCurso.fecha_inicio | date:'HH:mm' }} · #{{ viajeEnCurso.id }}
+        </span>
+      </div>
+
+      <!-- Contenido: persona + mapa -->
+      <div class="p-4 space-y-4">
+
+        <!-- Tarjeta de la otra persona -->
+        <div class="flex items-center gap-3">
+          <!-- Avatar -->
+          <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden shrink-0 border-2 border-gray-200">
+            <img *ngIf="otraPersona?.foto_perfil"
+                 [src]="otraPersona?.foto_perfil"
+                 class="w-full h-full object-cover"
+                 [alt]="otraPersona?.nombre">
+            <div *ngIf="!otraPersona?.foto_perfil"
+                 class="w-full h-full flex items-center justify-center text-lg font-bold text-gray-400">
+              {{ otraPersona?.nombre?.charAt(0)?.toUpperCase() }}
+            </div>
+          </div>
+
+          <!-- Datos -->
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-gray-800">
+              {{ otraPersona?.nombre }} {{ otraPersona?.apellido }}
+            </p>
+            <p class="text-xs text-gray-500">{{ esConductor ? 'Pasajero' : 'Conductor' }}</p>
+
+            <!-- Info vehículo (solo para pasajero) -->
+            <ng-container *ngIf="!esConductor && viajeEnCurso.vehiculo">
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-xs text-gray-500">
+                <span class="font-medium">
+                  {{ viajeEnCurso.vehiculo.marca }} {{ viajeEnCurso.vehiculo.modelo }}
+                </span>
+                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono font-semibold tracking-wider text-gray-700">
+                  {{ viajeEnCurso.vehiculo.placa }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Precio -->
+          <div class="text-right shrink-0">
+            <p class="text-xs text-gray-400">Precio</p>
+            <p class="font-bold text-green-600">${{ viajeEnCurso.precio | number:'1.0-0' }}</p>
+          </div>
+        </div>
+
+        <!-- Ruta (origen → destino) -->
+        <div class="bg-gray-50 rounded-xl px-4 py-3 text-sm space-y-1.5">
+          <div class="flex items-center gap-2 text-gray-600">
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0"></span>
+            <span class="truncate">{{ viajeEnCurso.ruta?.origen_descripcion }}</span>
+          </div>
+          <div class="ml-[4px] border-l-2 border-dashed border-gray-300 h-3"></div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
+            <span class="truncate">{{ viajeEnCurso.ruta?.destino_descripcion }}</span>
+          </div>
+        </div>
+
+        <!-- Mapa Leaflet -->
+        <div class="rounded-xl overflow-hidden border border-gray-200">
+          <div class="px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <p class="text-xs font-medium text-gray-600">Mapa del recorrido</p>
+            <div class="flex items-center gap-1.5 text-xs"
+                 [class.text-indigo-600]="esConductor"
+                 [class.text-gray-400]="!esConductor">
+              <span class="w-1.5 h-1.5 rounded-full animate-pulse"
+                    [class.bg-indigo-500]="esConductor"
+                    [class.bg-gray-400]="!esConductor"></span>
+              {{ esConductor ? 'Compartiendo ubicación' : 'Rastreando conductor' }}
+            </div>
+          </div>
+
+          <div #mapDashEl style="height:280px;width:100%;"></div>
+
+          <!-- Leyenda -->
+          <div class="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center gap-4 text-xs text-gray-400">
+            <span class="flex items-center gap-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Origen
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Destino
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Conductor
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SALUDO
+  ════════════════════════════════════════════════════════════════ -->
   <div>
     <h2 class="text-2xl font-bold text-gray-800">
       Hola, {{ usuario?.nombre }} 👋
@@ -11,7 +122,9 @@
     </p>
   </div>
 
-  <!-- Tarjetas de resumen -->
+  <!-- ═══════════════════════════════════════════════════════════
+       TARJETAS DE RESUMEN
+  ════════════════════════════════════════════════════════════════ -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
     <div class="card flex items-center gap-4">
@@ -59,19 +172,19 @@
 
   </div>
 
-  <!-- Acciones rápidas -->
+  <!-- ═══════════════════════════════════════════════════════════
+       ACCIONES RÁPIDAS
+  ════════════════════════════════════════════════════════════════ -->
   <div class="card">
     <h3 class="font-semibold text-gray-700 mb-4">Acciones rápidas</h3>
     <div class="flex flex-wrap gap-3">
 
-      <!-- Pasajero -->
       <ng-container *ngIf="!auth.hasRole('conductor') && !auth.hasRole('administrador')">
         <a routerLink="/viajes" class="btn-primary">Solicitar viaje</a>
         <a routerLink="/rutas" class="btn-secondary">Ver rutas</a>
         <a routerLink="/pagos" class="btn-secondary">Recargar billetera</a>
       </ng-container>
 
-      <!-- Conductor -->
       <ng-container *ngIf="auth.hasRole('conductor')">
         <a routerLink="/viajes" class="btn-primary">Ver mis viajes</a>
         <a routerLink="/vehiculos" class="btn-secondary">Mis vehículos</a>
@@ -79,7 +192,6 @@
         <a routerLink="/calificaciones" class="btn-secondary">Mis calificaciones</a>
       </ng-container>
 
-      <!-- Administrador -->
       <ng-container *ngIf="auth.hasRole('administrador')">
         <a routerLink="/viajes" class="btn-primary">Ver viajes</a>
         <a routerLink="/usuarios" class="btn-secondary">Gestionar usuarios</a>
@@ -90,7 +202,9 @@
     </div>
   </div>
 
-  <!-- Viajes recientes -->
+  <!-- ═══════════════════════════════════════════════════════════
+       VIAJES RECIENTES
+  ════════════════════════════════════════════════════════════════ -->
   <div class="card">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-semibold text-gray-700">
@@ -102,15 +216,15 @@
     <div *ngIf="loading" class="text-center py-8 text-gray-400">Cargando...</div>
 
     <div *ngIf="!loading && viajesRecientes.length === 0"
-      class="text-center py-8 text-gray-400 text-sm">
+         class="text-center py-8 text-gray-400 text-sm">
       <ng-container *ngIf="auth.hasRole('conductor')">No tienes viajes asignados aún.</ng-container>
       <ng-container *ngIf="!auth.hasRole('conductor')">No tienes viajes aún. ¡Solicita tu primer viaje!</ng-container>
     </div>
 
     <div *ngIf="!loading && viajesRecientes.length > 0" class="divide-y divide-gray-100">
-      <div *ngFor="let viaje of viajesRecientes" class="py-3 flex items-center justify-between">
-        <div>
-          <p class="text-sm font-medium text-gray-800">
+      <div *ngFor="let viaje of viajesRecientes" class="py-3 flex items-center justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">
             {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
           </p>
           <p class="text-xs text-gray-400 mt-0.5">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
@@ -118,7 +232,16 @@
             Pasajero: {{ viaje.pasajero?.nombre }} {{ viaje.pasajero?.apellido }}
           </p>
         </div>
-        <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Botón calificar: solo pasajero, viaje finalizado, conductor asignado -->
+          <button
+            *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
+            (click)="calificarViaje(viaje)"
+            class="flex items-center gap-1 text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-2.5 py-1 rounded-full transition-colors">
+            <span>★</span> Calificar
+          </button>
+          <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
+        </div>
       </div>
     </div>
   </div>

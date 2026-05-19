@@ -20,4 +20,10 @@ const promedio = async (req, res, next) => {
   catch (err) { next(err); }
 };
 
-module.exports = { listar, crear, promedio };
+const yaCalifique = async (req, res, next) => {
+  try {
+    return ok(res, await svc.yaCalificoViaje(req.user.id, Number(req.params.viaje_id)));
+  } catch (err) { next(err); }
+};
+
+module.exports = { listar, crear, promedio, yaCalifique };

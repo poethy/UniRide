@@ -1,17 +1,40 @@
 const prisma = require('../utils/prisma');
 
 const include = {
-  pasajero:  { select: { id: true, nombre: true, apellido: true, foto_perfil: true } },
-  conductor: { select: { id: true, nombre: true, apellido: true, foto_perfil: true } },
+  pasajero:  { select: { id: true, nombre: true, apellido: true, foto_perfil: true, telefono: true } },
+  conductor: { select: { id: true, nombre: true, apellido: true, foto_perfil: true, telefono: true } },
   vehiculo:  true,
   ruta:      { include: { puntos_ruta: { orderBy: { orden: 'asc' } } } },
 };
 
 async function listar(filtros = {}) {
-  const where = {};
-  if (filtros.pasajero_id) where.pasajero_id = filtros.pasajero_id;
-  if (filtros.conductor_id) where.conductor_id = filtros.conductor_id;
-  if (filtros.estado) where.estado = filtros.estado;
+  let where = {};
+
+  if (filtros.pasajero_id) {
+    // Vista pasajero: sus propios viajes
+    where.pasajero_id = parseInt(filtros.pasajero_id, 10);
+    if (filtros.estado) where.estado = filtros.estado;
+  } else if (filtros.conductor_id) {
+    const conductorId = parseInt(filtros.conductor_id, 10);
+    if (!filtros.estado) {
+      // "Todos": todos los pendientes (para aceptar) + sus propios viajes
+      where = {
+        OR: [
+          { estado: 'pendiente' },
+          { conductor_id: conductorId },
+        ],
+      };
+    } else if (filtros.estado === 'pendiente') {
+      // Filtrando solo pendientes: todos los disponibles (sin conductor aún)
+      where = { estado: 'pendiente' };
+    } else {
+      // Otro estado: solo sus propios viajes
+      where = { conductor_id: conductorId, estado: filtros.estado };
+    }
+  } else {
+    if (filtros.estado) where.estado = filtros.estado;
+  }
+
   return prisma.viajes.findMany({ where, include, orderBy: { fecha_solicitud: 'desc' } });
 }
 

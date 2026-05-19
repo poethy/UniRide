@@ -67,15 +67,37 @@
           </div>
 
           <div class="flex flex-col gap-2 shrink-0">
+            <!-- Seguimiento (en curso) -->
+            <button *ngIf="viaje.estado === 'en_curso'" (click)="verSeguimiento(viaje)"
+              class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+              Seguimiento
+            </button>
+            <!-- Calificar (finalizado, solo pasajero) -->
+            <button
+              *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
+              (click)="calificarViaje(viaje)"
+              class="text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg py-1.5 px-3 flex items-center gap-1 transition-colors">
+              <span>★</span> Calificar
+            </button>
             <ng-container *ngIf="auth.hasRole('conductor')">
-              <button *ngIf="viaje.estado === 'aceptado'" (click)="cambiarEstado(viaje, 'iniciar')"
+              <button *ngIf="viaje.estado === 'pendiente'" (click)="aceptar(viaje)"
+                class="btn-primary text-xs py-1.5 px-3">Aceptar</button>
+              <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
+                (click)="cambiarEstado(viaje, 'iniciar')"
                 class="btn-primary text-xs py-1.5 px-3">Iniciar</button>
-              <button *ngIf="viaje.estado === 'en_curso'" (click)="cambiarEstado(viaje, 'finalizar')"
+              <button *ngIf="viaje.estado === 'en_curso' && viaje.conductor?.id === auth.currentUser?.id"
+                (click)="cambiarEstado(viaje, 'finalizar')"
                 class="btn-primary text-xs py-1.5 px-3">Finalizar</button>
+              <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
+                (click)="cancelar(viaje)"
+                class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
             </ng-container>
-            <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
-              (click)="cancelar(viaje)"
-              class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
+            <ng-container *ngIf="!auth.hasRole('conductor')">
+              <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
+                (click)="cancelar(viaje)"
+                class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
+            </ng-container>
           </div>
 
         </div>

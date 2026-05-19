@@ -79,8 +79,8 @@ export interface Viaje {
   fecha_inicio?: string;
   fecha_fin?: string;
   motivo_cancelacion?: string;
-  pasajero?: Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil'>;
-  conductor?: Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil'>;
+  pasajero?: Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil' | 'telefono'>;
+  conductor?: Pick<Usuario, 'id' | 'nombre' | 'apellido' | 'foto_perfil' | 'telefono'>;
   vehiculo?: Vehiculo;
   ruta?: Ruta;
 }

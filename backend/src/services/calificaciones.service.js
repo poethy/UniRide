@@ -25,9 +25,21 @@ async function crear(calificador_id, data) {
   const esParticipante = viaje.pasajero_id === calificador_id || viaje.conductor_id === calificador_id;
   if (!esParticipante) throw { status: 403, message: 'No participaste en este viaje' };
 
+  const yaCalifico = await prisma.calificaciones.findFirst({
+    where: { viaje_id, calificador_id },
+  });
+  if (yaCalifico) throw { status: 409, message: 'Ya calificaste este viaje' };
+
   return prisma.calificaciones.create({
     data: { viaje_id, calificador_id, calificado_id, puntaje, comentario },
   });
+}
+
+async function yaCalificoViaje(calificador_id, viaje_id) {
+  const found = await prisma.calificaciones.findFirst({
+    where: { viaje_id, calificador_id },
+  });
+  return !!found;
 }
 
 async function promedioUsuario(usuario_id) {
@@ -39,4 +51,4 @@ async function promedioUsuario(usuario_id) {
   return { promedio: result._avg.puntaje, total: result._count };
 }
 
-module.exports = { listarDeUsuario, crear, promedioUsuario };
+module.exports = { listarDeUsuario, crear, promedioUsuario, yaCalificoViaje };

@@ -9,6 +9,8 @@ router.post('/',             auth, permit('viajes','crear'),  ctrl.solicitar);
 router.patch('/:id/aceptar', auth, permit('viajes','editar'), ctrl.aceptar);
 router.patch('/:id/iniciar', auth, permit('viajes','editar'), ctrl.iniciar);
 router.patch('/:id/finalizar',auth,permit('viajes','editar'), ctrl.finalizar);
-router.patch('/:id/cancelar',auth,                            ctrl.cancelar);
+router.patch('/:id/cancelar',    auth,                            ctrl.cancelar);
+router.put('/:id/ubicacion',     auth, permit('viajes','editar'), ctrl.actualizarUbicacion);
+router.get('/:id/ubicacion',     auth, permit('viajes','ver'),    ctrl.obtenerUbicacion);
 
 module.exports = router;
