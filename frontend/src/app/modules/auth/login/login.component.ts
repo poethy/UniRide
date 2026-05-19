@@ -12,7 +12,8 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
-      email:    ['', [Validators.required, Validators.email]],
+      // Accept bare username (sofia.henao) OR full email (sofia.henao@uam.edu.co)
+      email:    ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+\-]+(@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})?$/)]],
       password: ['', Validators.required],
     });
   }
@@ -20,7 +21,11 @@ export class LoginComponent {
   submit(): void {
     if (this.form.invalid) return;
     this.loading = true;
-    const { email, password } = this.form.value;
+    let { email, password } = this.form.value;
+    // Auto-append domain when user typed only the username part
+    if (!email.includes('@')) {
+      email = `${email}@uam.edu.co`;
+    }
     this.auth.login(email, password).subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
