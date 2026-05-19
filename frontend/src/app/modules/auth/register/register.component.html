@@ -48,46 +48,58 @@
   </div>
 
   <!-- RIGHT: form panel -->
-  <div style="padding:48px 60px;display:flex;align-items:center;justify-content:center;overflow-y:auto">
+  <div class="ur-auth-form" style="padding:52px 48px;display:flex;align-items:center;justify-content:center;overflow-y:auto;background:var(--bg)">
     <div style="width:100%;max-width:400px">
 
-      <!-- Eyebrow + title -->
-      <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Crear cuenta</div>
-      <div style="font-size:34px;font-weight:700;color:var(--text);letter-spacing:-.025em;margin-top:10px;line-height:1.05;font-family:'Space Grotesk',sans-serif">
-        Registra<br>tu perfil.
+      <!-- UAM institution badge -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
+        <img src="logo-uam.png" alt="UAM" style="width:34px;height:34px;object-fit:contain">
+        <div style="font-size:9.5px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;line-height:1.5">
+          Fundación U. Autónoma<br>de las Américas
+        </div>
+      </div>
+
+      <!-- uni·ride wordmark -->
+      <div style="font-size:54px;font-weight:700;letter-spacing:-.04em;font-family:'Space Grotesk',sans-serif;color:var(--text);line-height:1">
+        uni<span style="color:var(--accent)">·</span>ride
+      </div>
+
+      <!-- Tagline -->
+      <div style="font-size:15px;color:var(--text-2);line-height:1.55;margin-top:12px;margin-bottom:24px;max-width:310px">
+        Crea tu cuenta y empieza a compartir ruta con otros estudiantes de la UAM.
       </div>
 
       <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="submit()" style="margin-top:24px">
+      <form [formGroup]="form" (ngSubmit)="submit()">
 
         <!-- Nombre + Apellido -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
-            <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Nombre</div>
-            <div style="padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+            <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Nombre</div>
+            <div style="padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
               [style.border-color]="form.get('nombre')?.invalid && form.get('nombre')?.touched ? 'var(--danger)' : 'transparent'">
               <input formControlName="nombre" type="text" placeholder="Juan"
-                style="width:100%;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+                style="width:100%;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
             </div>
           </div>
           <div>
-            <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Apellido</div>
-            <div style="padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+            <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Apellido</div>
+            <div style="padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
               [style.border-color]="form.get('apellido')?.invalid && form.get('apellido')?.touched ? 'var(--danger)' : 'transparent'">
               <input formControlName="apellido" type="text" placeholder="Pérez"
-                style="width:100%;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+                style="width:100%;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
             </div>
           </div>
         </div>
 
         <!-- Email -->
         <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Correo electrónico</div>
-          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Correo institucional</div>
+          <div style="display:flex;align-items:center;padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
             [style.border-color]="form.get('email')?.invalid && form.get('email')?.touched ? 'var(--danger)' : 'transparent'">
-            <input formControlName="email" type="email" placeholder="correo@uam.edu.co"
-              style="flex:1;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
-            <span style="font-size:11.5px;color:var(--text-3);font-weight:600">@uam.edu.co</span>
+            <input formControlName="email" type="email" placeholder="juan.perez"
+              style="flex:1;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+            <span style="font-size:13px;color:var(--text-3);font-weight:500;flex-shrink:0">@uam.edu.co</span>
           </div>
           <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
             style="font-size:12px;color:var(--danger);margin-top:4px;font-weight:600">Ingresa un email válido</div>
@@ -95,11 +107,11 @@
 
         <!-- Contraseña -->
         <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Contraseña</div>
-          <div style="padding:14px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Contraseña</div>
+          <div style="padding:13px 16px;background:var(--bg-soft);border-radius:12px;border:1.5px solid transparent"
             [style.border-color]="form.get('password')?.invalid && form.get('password')?.touched ? 'var(--danger)' : 'transparent'">
             <input formControlName="password" type="password" placeholder="Mínimo 6 caracteres"
-              style="width:100%;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+              style="width:100%;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
           </div>
           <div *ngIf="form.get('password')?.hasError('minlength') && form.get('password')?.touched"
             style="font-size:12px;color:var(--danger);margin-top:4px;font-weight:600">Mínimo 6 caracteres</div>
@@ -107,25 +119,25 @@
 
         <!-- Universidad -->
         <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Universidad</div>
-          <div style="padding:14px 16px;background:var(--bg-soft);border-radius:12px">
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Universidad</div>
+          <div style="padding:13px 16px;background:var(--bg-soft);border-radius:12px">
             <input formControlName="universidad" type="text" placeholder="Ej: Universidad Autónoma de Manizales"
-              style="width:100%;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+              style="width:100%;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
           </div>
         </div>
 
         <!-- Código estudiantil -->
-        <div style="margin-bottom:20px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Código estudiantil</div>
-          <div style="padding:14px 16px;background:var(--bg-soft);border-radius:12px">
+        <div style="margin-bottom:18px">
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px">Código estudiantil</div>
+          <div style="padding:13px 16px;background:var(--bg-soft);border-radius:12px">
             <input formControlName="codigo_estudiantil" type="text" placeholder="Ej: 1234567"
-              style="width:100%;font-size:15px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
+              style="width:100%;font-size:14.5px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit">
           </div>
         </div>
 
         <!-- Tipo de cuenta -->
         <div style="margin-bottom:22px">
-          <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Tipo de cuenta</div>
+          <div style="font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">Tipo de cuenta</div>
           <div style="padding:4px;background:var(--bg-soft);border-radius:14px;display:flex;gap:2px">
             <label *ngFor="let opt of [{id:3,label:'Pasajero',icon:'user'},{id:2,label:'Conductor',icon:'car'},{id:1,label:'Admin',icon:'settings'}]"
               style="flex:1;cursor:pointer">
@@ -134,15 +146,12 @@
                 [style.background]="form.get('rol_id')?.value === opt.id ? 'var(--surface)' : 'transparent'"
                 [style.box-shadow]="form.get('rol_id')?.value === opt.id ? 'var(--sh-1)' : 'none'"
                 [style.color]="form.get('rol_id')?.value === opt.id ? 'var(--text)' : 'var(--text-3)'">
-                <!-- User icon -->
                 <svg *ngIf="opt.icon==='user'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" [attr.stroke-width]="form.get('rol_id')?.value === opt.id ? '2.2' : '1.8'">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
-                <!-- Car icon -->
                 <svg *ngIf="opt.icon==='car'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" [attr.stroke-width]="form.get('rol_id')?.value === opt.id ? '2.2' : '1.8'">
                   <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                 </svg>
-                <!-- Settings icon -->
                 <svg *ngIf="opt.icon==='settings'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" [attr.stroke-width]="form.get('rol_id')?.value === opt.id ? '2.2' : '1.8'">
                   <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                 </svg>
@@ -154,23 +163,35 @@
 
         <!-- CTA -->
         <button type="submit" [disabled]="form.invalid || loading"
-          style="width:100%;padding:14px 22px 14px 14px;background:var(--text);color:var(--bg);border-radius:16px;display:flex;align-items:center;gap:14px;border:none;cursor:pointer;font-family:inherit;transition:opacity .15s"
+          style="width:100%;padding:15px;background:var(--brand);color:#fff;border-radius:13px;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s"
           [style.opacity]="form.invalid || loading ? '0.5' : '1'">
-          <span style="width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00;flex-shrink:0">
-            <svg *ngIf="!loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            <svg *ngIf="loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="animation:spin 1s linear infinite">
-              <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".25"/>
-              <path d="M21 12a9 9 0 00-9-9" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <div style="font-size:17px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif;flex:1">
-            {{ loading ? 'Registrando...' : 'Crear cuenta' }}
-          </div>
+          <span>{{ loading ? 'Registrando...' : 'Crear cuenta' }}</span>
+          <svg *ngIf="!loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          <svg *ngIf="loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite">
+            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".25"/>
+            <path d="M21 12a9 9 0 00-9-9" stroke-linecap="round"/>
+          </svg>
         </button>
 
       </form>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin:22px 0">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:12px;color:var(--text-3);font-weight:600">o continúa con</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- Institutional account -->
+      <button type="button"
+        style="width:100%;padding:13px 16px;background:transparent;border:1.5px solid var(--border);border-radius:13px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:inherit;transition:background .15s">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span style="font-size:14px;font-weight:700;color:var(--text)">Cuenta institucional UAM</span>
+      </button>
 
       <!-- Login link -->
       <div style="text-align:center;margin-top:24px;font-size:13.5px;color:var(--text-2)">
