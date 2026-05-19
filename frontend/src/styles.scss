@@ -200,6 +200,9 @@
   .ur-sidebar-close {
     display: none;
   }
+
+  /* ── Dashboard mini-trips pill (hidden on desktop) ── */
+  .ur-mini-trips { display: none; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -243,6 +246,14 @@
   app-sidebar.ur-sidebar-open > aside {
     transform: translateX(0) !important;
   }
+
+  /* Dashboard stats: mini trips pill visible, viajes card hidden */
+  .ur-mini-trips  { display: inline-flex !important; align-items: center; }
+  .ur-stat-viajes { display: none !important; }
+
+  /* Saldo and calificación span the full grid width */
+  .ur-stat-saldo,
+  .ur-stat-cal { grid-column: 1 / -1 !important; }
 
   /* Auth pages: collapse to single column */
   .ur-auth-split {
