@@ -1,89 +1,211 @@
-<div class="space-y-6">
-  <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-gray-800">Rutas</h2>
-    <button (click)="showForm = !showForm" class="btn-primary">+ Nueva ruta</button>
+<!-- Page header -->
+<div style="padding:24px 36px 0;display:flex;align-items:flex-end;justify-content:space-between">
+  <div>
+    <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Tus trayectos guardados</div>
+    <div style="font-size:44px;font-weight:700;color:var(--text);letter-spacing:-.035em;line-height:1;margin-top:8px;font-family:'Space Grotesk','Plus Jakarta Sans',sans-serif">Rutas</div>
+    <div style="font-size:14px;color:var(--text-2);margin-top:8px">Las que repites cada semana. Pídelas con un clic.</div>
   </div>
-
-  <div *ngIf="showForm" class="card">
-    <h3 class="font-semibold text-gray-700 mb-4">Nueva ruta</h3>
-    <form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-2 gap-4">
-      <div class="col-span-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre (opcional)</label>
-        <input formControlName="nombre" class="input-field" placeholder="Ej: Casa → Universidad">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Origen</label>
-        <input formControlName="origen_descripcion" class="input-field" placeholder="Dirección de origen">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Lat. origen</label>
-          <input formControlName="origen_lat" type="number" step="any" class="input-field" placeholder="4.6097">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Lng. origen</label>
-          <input formControlName="origen_lng" type="number" step="any" class="input-field" placeholder="-74.0817">
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Destino</label>
-        <input formControlName="destino_descripcion" class="input-field" placeholder="Dirección de destino">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Lat. destino</label>
-          <input formControlName="destino_lat" type="number" step="any" class="input-field">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Lng. destino</label>
-          <input formControlName="destino_lng" type="number" step="any" class="input-field">
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Distancia (km)</label>
-        <input formControlName="distancia_km" type="number" step="0.1" class="input-field">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Duración (min)</label>
-        <input formControlName="duracion_min" type="number" class="input-field">
-      </div>
-      <div class="col-span-2 flex gap-3">
-        <button type="submit" [disabled]="form.invalid" class="btn-primary">Guardar</button>
-        <button type="button" (click)="showForm = false" class="btn-secondary">Cancelar</button>
-      </div>
-    </form>
-  </div>
-
-  <ng-container *ngIf="rutas$ | async as rutas">
-    <div *ngIf="rutas.length === 0" class="card text-center py-12 text-gray-400">
-      No hay rutas registradas.
+  <button (click)="showForm = !showForm"
+    style="padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:16px;display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer">
+    <span style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+    </span>
+    <div>
+      <div style="font-size:10px;opacity:.55;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Crear trayecto</div>
+      <div style="font-size:15px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif">Nueva ruta</div>
     </div>
+  </button>
+</div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div *ngFor="let ruta of rutas" class="card hover:shadow-md transition-shadow">
-      <div class="flex items-start justify-between gap-2">
-        <div class="flex-1 min-w-0">
-          <p *ngIf="ruta.nombre" class="font-semibold text-gray-800 mb-1">{{ ruta.nombre }}</p>
-          <p class="text-sm text-gray-600">
-            <span class="text-green-600 font-medium">●</span> {{ ruta.origen_descripcion }}
-          </p>
-          <p class="text-sm text-gray-600 mt-1">
-            <span class="text-red-500 font-medium">●</span> {{ ruta.destino_descripcion }}
-          </p>
-          <div class="flex gap-3 mt-2 text-xs text-gray-400">
-            <span *ngIf="ruta.distancia_km">{{ ruta.distancia_km }} km</span>
-            <span *ngIf="ruta.duracion_min">{{ ruta.duracion_min }} min</span>
+<!-- Form nueva ruta -->
+<div *ngIf="showForm" style="margin:24px 36px 0;padding:24px;background:var(--bg-soft);border-radius:20px;border:1px solid var(--border)">
+  <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:18px;font-family:'Space Grotesk',sans-serif">Nueva ruta</div>
+  <form [formGroup]="form" (ngSubmit)="guardar()" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="grid-column:1/-1">
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Nombre (opcional)</label>
+      <input formControlName="nombre" class="input-field" placeholder="Ej: Casa → Universidad">
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Origen</label>
+      <input formControlName="origen_descripcion" class="input-field" placeholder="Dirección de origen">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Lat. origen</label>
+        <input formControlName="origen_lat" type="number" step="any" class="input-field" placeholder="4.6097">
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Lng. origen</label>
+        <input formControlName="origen_lng" type="number" step="any" class="input-field" placeholder="-74.0817">
+      </div>
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Destino</label>
+      <input formControlName="destino_descripcion" class="input-field" placeholder="Dirección de destino">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Lat. destino</label>
+        <input formControlName="destino_lat" type="number" step="any" class="input-field">
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Lng. destino</label>
+        <input formControlName="destino_lng" type="number" step="any" class="input-field">
+      </div>
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Distancia (km)</label>
+      <input formControlName="distancia_km" type="number" step="0.1" class="input-field">
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Duración (min)</label>
+      <input formControlName="duracion_min" type="number" class="input-field">
+    </div>
+    <div style="grid-column:1/-1;display:flex;gap:10px">
+      <button type="submit" [disabled]="form.invalid"
+        style="padding:10px 22px;background:var(--text);color:var(--bg);border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer">Guardar</button>
+      <button type="button" (click)="showForm = false"
+        style="padding:10px 22px;background:transparent;color:var(--text-2);border-radius:12px;border:1.5px solid var(--border-strong);font-weight:700;font-size:14px;cursor:pointer">Cancelar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Filter pills -->
+<div style="padding:28px 36px 0;display:flex;align-items:center;gap:8px">
+  <div style="display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--text);color:var(--bg);border:none">
+    Todas
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--text-2);border:1.5px solid var(--border-strong)">
+    Favoritas
+  </div>
+</div>
+
+<!-- Routes asymmetric grid -->
+<ng-container *ngIf="rutas$ | async as rutas">
+
+  <div style="padding:24px 36px 0;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px;align-items:stretch">
+
+    <!-- Hero card: first route -->
+    <ng-container *ngFor="let ruta of (rutas | slice:0:1)">
+      <div style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px;position:relative;overflow:hidden">
+        <div style="position:relative">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">
+              {{ esFavorita(ruta) ? 'Tu favorita' : 'Tu ruta' }}
+            </div>
+            <button (click)="toggleFavorito(ruta)" style="background:none;border:none;cursor:pointer;padding:0"
+              [style.color]="esFavorita(ruta) ? 'var(--accent)' : 'var(--text-3)'">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </button>
+          </div>
+          <div style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-.03em;margin-top:10px;line-height:1.05;font-family:'Space Grotesk',sans-serif">
+            {{ ruta.nombre || ruta.origen_descripcion }}
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px">
+            <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px">
+              <div style="width:9px;height:9px;border-radius:50%;background:var(--text)"></div>
+              <div style="width:2px;height:24px;background:var(--border-strong);margin:4px 0"></div>
+              <div style="width:9px;height:9px;border-radius:2px;background:var(--accent)"></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:14.5px;font-weight:700;color:var(--text)">{{ ruta.origen_descripcion }}</div>
+              <div style="font-size:14.5px;font-weight:700;color:var(--text);margin-top:16px">{{ ruta.destino_descripcion }}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:18px;border-top:1.5px solid var(--text)">
+            <div style="display:flex;gap:22px">
+              <div *ngIf="ruta.distancia_km">
+                <div style="font-size:20px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">{{ ruta.distancia_km }} km</div>
+                <div style="font-size:10.5px;color:var(--text-3);font-weight:700;letter-spacing:.08em;text-transform:uppercase">Distancia</div>
+              </div>
+              <div *ngIf="ruta.duracion_min">
+                <div style="font-size:20px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">{{ ruta.duracion_min }} min</div>
+                <div style="font-size:10.5px;color:var(--text-3);font-weight:700;letter-spacing:.08em;text-transform:uppercase">Duración</div>
+              </div>
+            </div>
           </div>
         </div>
-        <button (click)="toggleFavorito(ruta)" class="shrink-0 mt-1"
-          [class.text-yellow-400]="esFavorita(ruta)"
-          [class.text-gray-300]="!esFavorita(ruta)">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-        </button>
+      </div>
+    </ng-container>
+    <div *ngIf="rutas.length === 0"
+      style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:var(--text-3);font-family:'Space Grotesk',sans-serif">No hay rutas aún</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:6px">Crea tu primera ruta para empezar</div>
+    </div>
+
+    <!-- Second card: second route or suggestion -->
+    <ng-container *ngFor="let ruta of (rutas | slice:1:2)">
+      <div style="padding:24px;border-radius:24px;background:var(--bg-soft);min-height:280px">
+        <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:10px">
+          {{ esFavorita(ruta) ? 'Favorita' : 'Ruta' }}
+        </div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-family:'Space Grotesk',sans-serif;line-height:1.2">
+          {{ ruta.nombre || (ruta.origen_descripcion + ' → ' + ruta.destino_descripcion) }}
+        </div>
+        <div style="margin-top:14px;font-size:13.5px;color:var(--text-2)">{{ ruta.origen_descripcion }}</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:2px">→ {{ ruta.destino_descripcion }}</div>
+        <div style="display:flex;gap:12px;margin-top:14px">
+          <span *ngIf="ruta.distancia_km" style="font-size:12px;color:var(--text-3);font-weight:600">{{ ruta.distancia_km }} km</span>
+          <span *ngIf="ruta.duracion_min" style="font-size:12px;color:var(--text-3);font-weight:600">{{ ruta.duracion_min }} min</span>
+        </div>
+        <div style="margin-top:auto;padding-top:20px;display:flex;gap:8px">
+          <button (click)="toggleFavorito(ruta)"
+            style="flex:1;padding:10px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer"
+            [style.background]="esFavorita(ruta) ? 'var(--uam-orange-100)' : 'var(--bg-tint)'"
+            [style.color]="esFavorita(ruta) ? 'var(--uam-orange-700)' : 'var(--text-2)'"
+            style="border:none">
+            {{ esFavorita(ruta) ? '★ Favorita' : '☆ Favorita' }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+    <div *ngIf="rutas.length < 2"
+      style="padding:24px;border-radius:24px;background:var(--uam-orange-100);min-height:280px;display:flex;flex-direction:column">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--uam-orange-700)" stroke-width="2"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div style="font-size:11px;font-weight:800;color:var(--uam-orange-700);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif;margin-top:22px">Sugerencia</div>
+      <div style="font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.025em;margin-top:8px;line-height:1.15;font-family:'Space Grotesk',sans-serif">
+        Crea tu primera ruta favorita para pedirla con un clic.
+      </div>
+      <div style="flex:1"></div>
+      <button (click)="showForm = true"
+        style="width:100%;padding:11px;border-radius:12px;background:var(--text);color:var(--bg);border:none;font-size:13px;font-weight:700;cursor:pointer">
+        Crear ruta
+      </button>
+    </div>
+
+    <!-- Add card: always shown -->
+    <div (click)="showForm = true"
+      style="padding:24px;border-radius:24px;border:2px dashed var(--border-strong);min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;cursor:pointer">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif">Crear nueva ruta</div>
+        <div style="font-size:12.5px;color:var(--text-3);margin-top:4px;max-width:200px">Guarda los trayectos que repites para pedirlos más rápido.</div>
       </div>
     </div>
+
   </div>
-  </ng-container>
-</div>
+
+  <!-- Additional routes (3+) -->
+  <div style="padding:16px 36px 36px;display:grid;grid-template-columns:1fr 1fr;gap:14px"
+    *ngIf="(rutas | slice:2).length > 0">
+    <div *ngFor="let ruta of (rutas | slice:2)"
+      style="padding:20px;border-radius:20px;background:var(--bg-soft);display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div style="flex:1;min-width:0">
+        <p *ngIf="ruta.nombre" style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px">{{ ruta.nombre }}</p>
+        <div style="font-size:13.5px;color:var(--text-2)">{{ ruta.origen_descripcion }}</div>
+        <div style="font-size:13.5px;color:var(--text-2);margin-top:2px">→ {{ ruta.destino_descripcion }}</div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <span *ngIf="ruta.distancia_km" style="font-size:12px;color:var(--text-3);font-weight:600">{{ ruta.distancia_km }} km</span>
+          <span *ngIf="ruta.duracion_min" style="font-size:12px;color:var(--text-3);font-weight:600">{{ ruta.duracion_min }} min</span>
+        </div>
+      </div>
+      <button (click)="toggleFavorito(ruta)" style="border:none;background:none;cursor:pointer;padding:0;flex-shrink:0;margin-top:2px"
+        [style.color]="esFavorita(ruta) ? 'var(--accent)' : 'var(--border-strong)'">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</ng-container>

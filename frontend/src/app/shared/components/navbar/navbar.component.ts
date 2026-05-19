@@ -13,7 +13,7 @@ export class NavbarComponent implements OnInit {
   noLeidas = 0;
 
   constructor(
-    public auth: AuthService,
+    public  auth:    AuthService,
     private notiSvc: NotificacionesService,
   ) {}
 
@@ -23,7 +23,5 @@ export class NavbarComponent implements OnInit {
     this.notiSvc.listar().subscribe();
   }
 
-  logout(): void {
-    this.auth.logout();
-  }
+  logout(): void { this.auth.logout(); }
 }

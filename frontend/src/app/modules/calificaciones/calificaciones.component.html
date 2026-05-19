@@ -1,145 +1,164 @@
-<div class="space-y-6">
-  <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-gray-800">Calificaciones</h2>
-    <button (click)="showForm = !showForm" class="btn-primary">+ Calificar</button>
-  </div>
-
-  <!-- Promedio recibido -->
-  <div class="card flex items-center gap-6">
-    <div class="text-center">
-      <p class="text-5xl font-bold text-yellow-400">{{ promedio | number:'1.1-1' }}</p>
-      <p class="text-sm text-gray-500 mt-1">de 5.0</p>
-    </div>
-    <div>
-      <div class="flex gap-0.5">
-        <svg *ngFor="let s of estrellas(promedioRedondeado)"
-          class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-        </svg>
-        <svg *ngFor="let s of estrellasVacias(promedioRedondeado)"
-          class="w-6 h-6 text-gray-200" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-        </svg>
-      </div>
-      <p class="text-sm text-gray-500 mt-1">{{ total }} calificaciones recibidas</p>
-    </div>
-  </div>
-
-  <!-- Formulario manual -->
-  <div *ngIf="showForm" class="card">
-    <h3 class="font-semibold text-gray-700 mb-4">Nueva calificación</h3>
-    <form [formGroup]="form" (ngSubmit)="guardar()" class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ID del viaje</label>
-          <input formControlName="viaje_id" type="number" class="input-field">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ID del usuario a calificar</label>
-          <input formControlName="calificado_id" type="number" class="input-field">
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Puntaje (1-5)</label>
-        <input formControlName="puntaje" type="number" min="1" max="5" class="input-field w-24">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Comentario (opcional)</label>
-        <textarea formControlName="comentario" rows="3" class="input-field" placeholder="Describe tu experiencia..."></textarea>
-      </div>
-      <div class="flex gap-3">
-        <button type="submit" [disabled]="form.invalid" class="btn-primary">Enviar</button>
-        <button type="button" (click)="showForm = false" class="btn-secondary">Cancelar</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Tabs -->
-  <div class="border-b border-gray-200">
-    <nav class="flex gap-6">
-      <button (click)="tab = 'recibidas'"
-        [class.border-indigo-500]="tab === 'recibidas'"
-        [class.text-indigo-600]="tab === 'recibidas'"
-        [class.border-transparent]="tab !== 'recibidas'"
-        [class.text-gray-500]="tab !== 'recibidas'"
-        class="pb-3 text-sm font-medium border-b-2 transition-colors">
-        Recibidas
-      </button>
-      <button (click)="tab = 'dadas'"
-        [class.border-indigo-500]="tab === 'dadas'"
-        [class.text-indigo-600]="tab === 'dadas'"
-        [class.border-transparent]="tab !== 'dadas'"
-        [class.text-gray-500]="tab !== 'dadas'"
-        class="pb-3 text-sm font-medium border-b-2 transition-colors">
-        Mis calificaciones
-      </button>
-    </nav>
-  </div>
-
-  <!-- Tab: Recibidas -->
-  <ng-container *ngIf="tab === 'recibidas'">
-    <ng-container *ngIf="calificaciones$ | async as lista">
-      <div *ngIf="lista.length === 0" class="card text-center py-12 text-gray-400">
-        Aún no tienes calificaciones recibidas.
-      </div>
-      <div class="space-y-3">
-        <div *ngFor="let c of lista" class="card">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="font-medium text-gray-800">
-                {{ c.calificador?.nombre }} {{ c.calificador?.apellido }}
-              </p>
-              <div class="flex gap-0.5 mt-1">
-                <svg *ngFor="let s of estrellas(c.puntaje)" class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <svg *ngFor="let s of estrellasVacias(c.puntaje)" class="w-4 h-4 text-gray-200" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-              </div>
-              <p *ngIf="c.comentario" class="text-sm text-gray-600 mt-2">{{ c.comentario }}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-xs text-gray-400">{{ c.created_at | date:'dd/MM/yyyy' }}</p>
-              <p class="text-xs text-gray-400 mt-0.5">Viaje #{{ c.viaje?.id }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-container>
-  </ng-container>
-
-  <!-- Tab: Mis calificaciones (dadas) -->
-  <ng-container *ngIf="tab === 'dadas'">
-    <ng-container *ngIf="calificacionesDadas$ | async as listaDadas">
-      <div *ngIf="listaDadas.length === 0" class="card text-center py-12 text-gray-400">
-        Aún no has calificado a ningún conductor.
-      </div>
-      <div class="space-y-3">
-        <div *ngFor="let c of listaDadas" class="card">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-xs text-indigo-500 font-medium mb-0.5">Conductor calificado</p>
-              <p class="font-medium text-gray-800">
-                {{ c.calificado?.nombre }} {{ c.calificado?.apellido }}
-              </p>
-              <div class="flex gap-0.5 mt-1">
-                <svg *ngFor="let s of estrellas(c.puntaje)" class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <svg *ngFor="let s of estrellasVacias(c.puntaje)" class="w-4 h-4 text-gray-200" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-              </div>
-              <p *ngIf="c.comentario" class="text-sm text-gray-600 mt-2">{{ c.comentario }}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-xs text-gray-400">{{ c.created_at | date:'dd/MM/yyyy' }}</p>
-              <p class="text-xs text-gray-400 mt-0.5">Viaje #{{ c.viaje?.id }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-container>
-  </ng-container>
+<!-- Header -->
+<div style="padding:24px 36px 0">
+  <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Tu reputación</div>
+  <div style="font-size:44px;font-weight:700;color:var(--text);letter-spacing:-.035em;margin-top:8px;font-family:'Space Grotesk','Plus Jakarta Sans',sans-serif">Calificaciones</div>
 </div>
+
+<!-- Rating + actions grid -->
+<ng-container *ngIf="calificaciones$ | async as lista">
+  <div style="padding:24px 36px 0;display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:flex-end">
+
+    <!-- Big rating card -->
+    <div style="padding:28px;background:var(--bg-soft);border-radius:24px;display:flex;align-items:center;gap:28px">
+      <div>
+        <div style="font-size:96px;font-weight:700;color:var(--text);letter-spacing:-.05em;line-height:.9;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+          {{ promedio !== null ? (promedio | number:'1.1-1') : '—' }}
+        </div>
+        <div style="display:flex;gap:3px;margin-top:10px">
+          <svg *ngFor="let s of estrellas(promedioRedondeado)" width="22" height="22" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg *ngFor="let s of estrellasVacias(promedioRedondeado)" width="22" height="22" viewBox="0 0 24 24" fill="var(--border-strong)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px">{{ total }} calificación{{ total !== 1 ? 'es' : '' }} recibida{{ total !== 1 ? 's' : '' }}</div>
+      </div>
+
+      <!-- Distribution bars -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <div *ngFor="let n of [5,4,3,2,1]" style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:var(--text-3);width:12px">{{ n }}</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--text-3)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <div style="flex:1;height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
+            <div [style.width]="(total > 0 ? (ratingCount(lista, n) / total * 100) : 0) + '%'"
+              style="height:100%;background:var(--accent);transition:width .3s ease"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:var(--text-3);width:18px;text-align:right;font-variant-numeric:tabular-nums">{{ ratingCount(lista, n) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action -->
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:14px">
+      <button (click)="showForm = !showForm"
+        style="padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:16px;display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer">
+        <span style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </span>
+        <div>
+          <div style="font-size:10px;opacity:.55;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Nuevo</div>
+          <div style="font-size:15px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif">Calificar viaje</div>
+        </div>
+      </button>
+    </div>
+
+  </div>
+</ng-container>
+
+<!-- Form manual -->
+<div *ngIf="showForm" style="margin:20px 36px 0;padding:24px;background:var(--bg-soft);border-radius:20px;border:1px solid var(--border)">
+  <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:18px;font-family:'Space Grotesk',sans-serif">Nueva calificación</div>
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">ID del viaje</label>
+        <input formControlName="viaje_id" type="number" class="input-field">
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">ID del usuario a calificar</label>
+        <input formControlName="calificado_id" type="number" class="input-field">
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Puntaje (1–5)</label>
+      <input formControlName="puntaje" type="number" min="1" max="5" class="input-field" style="width:80px">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Comentario (opcional)</label>
+      <textarea formControlName="comentario" rows="3" class="input-field" placeholder="Describe tu experiencia..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button type="submit" [disabled]="form.invalid"
+        style="padding:10px 22px;background:var(--text);color:var(--bg);border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer">Enviar</button>
+      <button type="button" (click)="showForm = false"
+        style="padding:10px 22px;background:transparent;color:var(--text-2);border-radius:12px;border:1.5px solid var(--border-strong);font-weight:700;font-size:14px;cursor:pointer">Cancelar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Tabs -->
+<div style="padding:36px 36px 0;border-bottom:1px solid var(--border);display:flex;gap:28px">
+  <div (click)="tab = 'recibidas'" style="position:relative;padding:14px 4px;display:flex;align-items:center;gap:8px;cursor:pointer">
+    <span [style.font-weight]="tab === 'recibidas' ? '700' : '600'" [style.color]="tab === 'recibidas' ? 'var(--text)' : 'var(--text-3)'" style="font-size:15px">Recibidas</span>
+    <div *ngIf="tab === 'recibidas'" style="position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--text);border-radius:2px"></div>
+  </div>
+  <div (click)="tab = 'dadas'" style="position:relative;padding:14px 4px;display:flex;align-items:center;gap:8px;cursor:pointer">
+    <span [style.font-weight]="tab === 'dadas' ? '700' : '600'" [style.color]="tab === 'dadas' ? 'var(--text)' : 'var(--text-3)'" style="font-size:15px">Mis calificaciones</span>
+    <div *ngIf="tab === 'dadas'" style="position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--text);border-radius:2px"></div>
+  </div>
+</div>
+
+<!-- Tab: Recibidas -->
+<ng-container *ngIf="tab === 'recibidas'">
+  <ng-container *ngIf="calificaciones$ | async as lista">
+    <div *ngIf="lista.length === 0"
+      style="margin:24px 36px;padding:48px 24px;text-align:center;color:var(--text-3);background:var(--bg-soft);border-radius:20px;font-size:15px;font-weight:600">
+      Aún no tienes calificaciones recibidas.
+    </div>
+    <div style="padding:24px 36px 36px;display:flex;flex-direction:column;gap:12px">
+      <div *ngFor="let c of lista"
+        style="padding:24px;border-radius:20px;background:var(--surface);border:1px solid var(--border);display:grid;grid-template-columns:60px 1fr 140px;gap:20px">
+        <!-- Avatar -->
+        <div style="width:60px;height:60px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif">
+          {{ (c.calificador?.nombre || 'U').charAt(0).toUpperCase() }}
+        </div>
+        <!-- Info -->
+        <div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:18px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif">{{ c.calificador?.nombre }} {{ c.calificador?.apellido }}</div>
+            <div style="display:flex;gap:1px">
+              <svg *ngFor="let s of estrellas(c.puntaje)" width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg *ngFor="let s of estrellasVacias(c.puntaje)" width="14" height="14" viewBox="0 0 24 24" fill="var(--border-strong)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+          </div>
+          <div *ngIf="c.comentario" style="margin-top:8px;font-size:15px;color:var(--text);line-height:1.5">«{{ c.comentario }}»</div>
+        </div>
+        <!-- Date + trip -->
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.06em;text-transform:uppercase">{{ c.created_at | date:'dd / MM / yyyy' }}</div>
+          <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;font-family:'Space Grotesk',sans-serif">Viaje #{{ c.viaje?.id }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- Tab: Mis calificaciones -->
+<ng-container *ngIf="tab === 'dadas'">
+  <ng-container *ngIf="calificacionesDadas$ | async as listaDadas">
+    <div *ngIf="listaDadas.length === 0"
+      style="margin:24px 36px;padding:48px 24px;text-align:center;color:var(--text-3);background:var(--bg-soft);border-radius:20px;font-size:15px;font-weight:600">
+      Aún no has calificado a nadie.
+    </div>
+    <div style="padding:24px 36px 36px;display:flex;flex-direction:column;gap:12px">
+      <div *ngFor="let c of listaDadas"
+        style="padding:24px;border-radius:20px;background:var(--surface);border:1px solid var(--border);display:grid;grid-template-columns:60px 1fr 140px;gap:20px">
+        <div style="width:60px;height:60px;border-radius:18px;background:var(--uam-orange-100);display:flex;align-items:center;justify-content:center;color:var(--uam-orange-700);font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif">
+          {{ (c.calificado?.nombre || 'U').charAt(0).toUpperCase() }}
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--brand);font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">Calificado</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:18px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif">{{ c.calificado?.nombre }} {{ c.calificado?.apellido }}</div>
+            <div style="display:flex;gap:1px">
+              <svg *ngFor="let s of estrellas(c.puntaje)" width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg *ngFor="let s of estrellasVacias(c.puntaje)" width="14" height="14" viewBox="0 0 24 24" fill="var(--border-strong)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+          </div>
+          <div *ngIf="c.comentario" style="margin-top:8px;font-size:15px;color:var(--text);line-height:1.5">«{{ c.comentario }}»</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.06em;text-transform:uppercase">{{ c.created_at | date:'dd / MM / yyyy' }}</div>
+          <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;font-family:'Space Grotesk',sans-serif">Viaje #{{ c.viaje?.id }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

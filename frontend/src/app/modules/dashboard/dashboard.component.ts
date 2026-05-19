@@ -12,7 +12,6 @@ import { SeguimientoService }    from '../../core/services/seguimiento.service';
 import { CalificacionesService } from '../../core/services/calificaciones.service';
 import { Usuario, Viaje }        from '../../core/models';
 
-// Fix Leaflet icons con webpack
 (L.Icon.Default.prototype as any)._getIconUrl = undefined;
 L.Icon.Default.mergeOptions({
   iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -28,27 +27,65 @@ L.Icon.Default.mergeOptions({
 export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('mapDashEl') mapDashEl?: ElementRef<HTMLDivElement>;
 
-  usuario: Usuario | null = null;
-  viajesRecientes: Viaje[] = [];
-  viajeEnCurso: Viaje | null = null;
-  totalViajes   = 0;
-  viajesActivos = 0;
-  loading       = true;
+  usuario:         Usuario | null = null;
+  viajesRecientes: Viaje[]        = [];
+  viajeEnCurso:    Viaje | null   = null;
+  proxViaje:       Viaje | null   = null;
+  totalViajes      = 0;
+  viajesActivos    = 0;
+  promedio         = 0;
+  promedioTotal    = 0;
+  loading          = true;
+  today            = new Date();
 
-  // Mapa
-  private map?: L.Map;
+  private map?:             L.Map;
   private conductorMarker?: L.Marker;
-  private mapInitialized = false;
-  private mapPendingInit = false;
-
-  // Tracking
-  private pollSub?: Subscription;
-  private geoInterval?: ReturnType<typeof setInterval>;
+  private mapInitialized    = false;
+  private mapPendingInit    = false;
+  private pollSub?:         Subscription;
+  private geoInterval?:     ReturnType<typeof setInterval>;
 
   get esConductor(): boolean { return this.auth.hasRole('conductor'); }
 
+  firstPart(s: string | null | undefined): string {
+    if (!s) return '';
+    const parts = s.split(',');
+    return parts[0] ?? '';
+  }
+
+  formatMonto(n: number | null | undefined): string {
+    return (n ?? 0).toLocaleString('es-CO');
+  }
+
+  starsArray(rating: number): boolean[] {
+    return [1, 2, 3, 4, 5].map(i => i <= Math.round(rating));
+  }
   get otraPersona() {
     return this.esConductor ? this.viajeEnCurso?.pasajero : this.viajeEnCurso?.conductor;
+  }
+
+  get fechaHoy(): string {
+    const dias  = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+    const meses = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO',
+                   'SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+    const d = this.today;
+    return `${dias[d.getDay()]}, ${d.getDate()} DE ${meses[d.getMonth()]}`;
+  }
+
+  get viajesAlcance(): number {
+    return Math.floor((this.usuario?.saldo_billetera ?? 0) / 5000);
+  }
+
+  get rutasGuardadas(): number {
+    const seen = new Set<string>();
+    for (const v of this.viajesRecientes) {
+      if (v.ruta) seen.add(`${v.ruta.origen_descripcion}|${v.ruta.destino_descripcion}`);
+    }
+    return seen.size;
+  }
+
+  get ultimoViajeFinalizado(): Viaje | null {
+    return this.viajesRecientes.find(v => v.estado === 'finalizado') ?? null;
   }
 
   constructor(
@@ -61,9 +98,15 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   ngOnInit(): void {
     this.usuario = this.auth.currentUser;
     this.cargarDatos();
+    const uid = this.usuario?.id;
+    if (uid) {
+      this.calificacionesSvc.promedio(uid).subscribe(res => {
+        this.promedio      = res.data?.promedio ?? 0;
+        this.promedioTotal = res.data?.total    ?? 0;
+      });
+    }
   }
 
-  /** Se llama en cada ciclo de change detection — inicializa el mapa solo una vez */
   ngAfterViewChecked(): void {
     if (this.mapPendingInit && this.mapDashEl?.nativeElement) {
       this.mapPendingInit = false;
@@ -74,74 +117,50 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   private cargarDatos(): void {
     const userId = this.usuario?.id;
     if (!userId) return;
-
-    const filtro = this.esConductor
-      ? { conductor_id: userId }
-      : { pasajero_id: userId };
+    const filtro = this.esConductor ? { conductor_id: userId } : { pasajero_id: userId };
 
     this.viajesSvc.listar(filtro).subscribe({
       next: res => {
-        const todos = res.data;
+        const todos          = res.data;
         this.viajesRecientes = todos.slice(0, 5);
         this.totalViajes     = todos.length;
         this.viajesActivos   = todos.filter(v =>
-          ['pendiente', 'aceptado', 'en_curso'].includes(v.estado)
-        ).length;
+          ['pendiente','aceptado','en_curso'].includes(v.estado)).length;
         this.loading = false;
 
-        // Detectar viaje en curso
         const enCurso = todos.find(v => v.estado === 'en_curso') ?? null;
         if (enCurso?.id !== this.viajeEnCurso?.id) {
           this.limpiarTracking();
           this.viajeEnCurso = enCurso;
-          if (enCurso) this.mapPendingInit = true;   // dispara ngAfterViewChecked
+          if (enCurso) this.mapPendingInit = true;
         }
+
+        this.proxViaje = !enCurso
+          ? (todos.find(v => v.estado === 'aceptado') ?? todos.find(v => v.estado === 'pendiente') ?? null)
+          : null;
       },
       error: () => { this.loading = false; },
     });
   }
 
-  // ── Mapa ──────────────────────────────────────────────────────────────────
-
   private initMap(): void {
     if (this.mapInitialized || !this.viajeEnCurso?.ruta || !this.mapDashEl?.nativeElement) return;
-
     const ruta = this.viajeEnCurso.ruta;
-    const { origen_lat, origen_lng, destino_lat, destino_lng, puntos_ruta } = ruta;
+    this.map = L.map(this.mapDashEl.nativeElement).setView([ruta.origen_lat, ruta.origen_lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this.map);
 
-    this.map = L.map(this.mapDashEl.nativeElement).setView([origen_lat, origen_lng], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-      maxZoom: 19,
-    }).addTo(this.map);
-
-    // Marcador origen
-    L.marker([origen_lat, origen_lng], {
-      icon: L.divIcon({
-        className: '',
-        html: '<div style="background:#22c55e;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>',
-        iconAnchor: [6, 6],
-      }),
-    }).addTo(this.map).bindPopup(`<b>Origen</b><br>${ruta.origen_descripcion}`);
-
-    // Marcador destino
-    L.marker([destino_lat, destino_lng], {
-      icon: L.divIcon({
-        className: '',
-        html: '<div style="background:#ef4444;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>',
-        iconAnchor: [6, 6],
-      }),
-    }).addTo(this.map).bindPopup(`<b>Destino</b><br>${ruta.destino_descripcion}`);
-
-    // Polyline
-    const coords: [number, number][] = puntos_ruta?.length
-      ? puntos_ruta.map(p => [p.latitud, p.longitud])
-      : [[origen_lat, origen_lng], [destino_lat, destino_lng]];
-
-    L.polyline(coords, { color: '#6366f1', weight: 4, dashArray: '8 5', opacity: 0.85 }).addTo(this.map);
+    const dot = (c: string) => L.divIcon({
+      className: '',
+      html: `<div style="background:${c};width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
+      iconAnchor: [6, 6],
+    });
+    L.marker([ruta.origen_lat,  ruta.origen_lng],  { icon: dot('#22c55e') }).addTo(this.map);
+    L.marker([ruta.destino_lat, ruta.destino_lng], { icon: dot('#ef4444') }).addTo(this.map);
+    const coords: [number, number][] = ruta.puntos_ruta?.length
+      ? ruta.puntos_ruta.map((p: any) => [p.latitud, p.longitud])
+      : [[ruta.origen_lat, ruta.origen_lng], [ruta.destino_lat, ruta.destino_lng]];
+    L.polyline(coords, { color: '#E8852A', weight: 4, opacity: 0.9 }).addTo(this.map);
     this.map.fitBounds(L.latLngBounds(coords), { padding: [35, 35] });
-
     this.mapInitialized = true;
     this.iniciarTracking();
   }
@@ -149,43 +168,29 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   private iniciarTracking(): void {
     if (!this.viajeEnCurso) return;
     const viajeId = this.viajeEnCurso.id;
-
     if (this.esConductor) {
       this.geoInterval = setInterval(() => {
-        navigator.geolocation?.getCurrentPosition(
-          pos => {
-            this.seguimientoSvc
-              .actualizarUbicacion(viajeId, pos.coords.latitude, pos.coords.longitude)
-              .subscribe();
-            this.moverMarcadorConductor(pos.coords.latitude, pos.coords.longitude);
-          },
-          () => {},
-          { enableHighAccuracy: true, timeout: 4000 }
-        );
+        navigator.geolocation?.getCurrentPosition(pos => {
+          this.seguimientoSvc.actualizarUbicacion(viajeId, pos.coords.latitude, pos.coords.longitude).subscribe();
+          this.moverConductor(pos.coords.latitude, pos.coords.longitude);
+        }, () => {}, { enableHighAccuracy: true, timeout: 4000 });
       }, 5000);
     } else {
       this.pollSub = interval(5000).pipe(
         switchMap(() => this.seguimientoSvc.obtenerUbicacion(viajeId))
-      ).subscribe(res => {
-        if (res.data) this.moverMarcadorConductor(res.data.lat, res.data.lng);
-      });
+      ).subscribe(res => { if (res.data) this.moverConductor(res.data.lat, res.data.lng); });
     }
   }
 
-  private moverMarcadorConductor(lat: number, lng: number): void {
+  private moverConductor(lat: number, lng: number): void {
     if (!this.map) return;
     const icon = L.divIcon({
       className: '',
-      html: `<div style="background:#6366f1;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 3px rgba(99,102,241,.3),0 2px 6px rgba(0,0,0,.3)"></div>`,
+      html: `<div style="background:#1E3A78;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 3px rgba(30,58,120,.3)"></div>`,
       iconAnchor: [9, 9],
     });
-    if (this.conductorMarker) {
-      this.conductorMarker.setLatLng([lat, lng]);
-    } else {
-      this.conductorMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 })
-        .addTo(this.map)
-        .bindPopup('<b>Conductor</b>');
-    }
+    if (this.conductorMarker) this.conductorMarker.setLatLng([lat, lng]);
+    else this.conductorMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(this.map!);
   }
 
   calificarViaje(viaje: Viaje): void {
@@ -197,12 +202,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.pollSub?.unsubscribe();
     if (this.geoInterval) clearInterval(this.geoInterval);
     if (this.map) { this.map.remove(); this.map = undefined; }
-    this.conductorMarker  = undefined;
-    this.mapInitialized   = false;
-    this.mapPendingInit   = false;
+    this.conductorMarker = undefined;
+    this.mapInitialized  = false;
+    this.mapPendingInit  = false;
   }
 
-  ngOnDestroy(): void {
-    this.limpiarTracking();
-  }
+  ngOnDestroy(): void { this.limpiarTracking(); }
 }

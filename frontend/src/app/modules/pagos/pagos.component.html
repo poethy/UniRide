@@ -1,72 +1,119 @@
-<div class="space-y-6">
-  <h2 class="text-2xl font-bold text-gray-800">Pagos y Billetera</h2>
+<!-- Header + Saldo hero -->
+<div style="padding:24px 36px 0">
+  <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Pagos y billetera</div>
 
-  <!-- Saldo -->
-  <div class="card bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-    <p class="text-sm opacity-80">Saldo disponible</p>
-    <p class="text-4xl font-bold mt-1">${{ (auth.user$ | async)?.saldo_billetera | number:'1.2-2' }}</p>
-    <form [formGroup]="form" (ngSubmit)="recargar()" class="flex gap-3 mt-4">
-      <input formControlName="monto" type="number" min="1" placeholder="Monto a recargar"
-        class="input-field bg-white/20 border-white/40 text-white placeholder-white/60 flex-1">
-      <button type="submit" [disabled]="form.invalid"
-        class="bg-white text-primary-700 font-semibold px-5 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-        Recargar
-      </button>
-    </form>
-  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:24px;margin-top:14px;align-items:flex-end">
 
-  <!-- Tabs -->
-  <div class="flex gap-1 border-b border-gray-200">
-    <button (click)="tab='pagos'" [class.border-b-2]="tab==='pagos'" [class.border-primary-600]="tab==='pagos'"
-      [class.text-primary-600]="tab==='pagos'" class="px-4 py-2 text-sm font-medium text-gray-500">
-      Pagos de viajes
-    </button>
-    <button (click)="tab='transacciones'" [class.border-b-2]="tab==='transacciones'" [class.border-primary-600]="tab==='transacciones'"
-      [class.text-primary-600]="tab==='transacciones'" class="px-4 py-2 text-sm font-medium text-gray-500">
-      Transacciones
-    </button>
-  </div>
-
-  <!-- Pagos -->
-  <ng-container *ngIf="tab === 'pagos'">
-    <ng-container *ngIf="pagos$ | async as pagos">
-      <div *ngIf="pagos.length === 0" class="card text-center py-12 text-gray-400">Sin pagos registrados.</div>
-      <div class="space-y-3">
-        <div *ngFor="let p of pagos" class="card flex items-center justify-between">
-          <div>
-            <p class="font-medium text-gray-800">Viaje #{{ p.viaje_id }}</p>
-            <p class="text-xs text-gray-400">{{ p.created_at | date:'dd/MM/yyyy HH:mm' }} · {{ p.metodo }}</p>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-lg text-gray-800">${{ p.monto | number:'1.2-2' }}</p>
-            <span [class]="'badge-' + (p.estado === 'completado' ? 'finalizado' : p.estado === 'pendiente' ? 'pendiente' : 'cancelado')">
-              {{ p.estado }}
-            </span>
-          </div>
-        </div>
+    <!-- Balance hero -->
+    <div>
+      <div style="font-size:14px;color:var(--text-2);font-weight:600">Tu saldo disponible</div>
+      <div style="font-size:120px;font-weight:700;color:var(--text);letter-spacing:-.055em;line-height:.9;margin-top:6px;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+        <span style="font-size:42px;color:var(--text-3);vertical-align:top;margin-right:4px;line-height:1.6">$</span>{{ ((auth.user$ | async)?.saldo_billetera ?? 0) | number:'1.0-0' }}
       </div>
-    </ng-container>
-  </ng-container>
-
-  <!-- Transacciones -->
-  <ng-container *ngIf="tab === 'transacciones'">
-    <ng-container *ngIf="transacciones$ | async as transacciones">
-      <div *ngIf="transacciones.length === 0" class="card text-center py-12 text-gray-400">Sin transacciones.</div>
-      <div class="space-y-2">
-        <div *ngFor="let t of transacciones" class="card flex items-center justify-between">
-          <div>
-            <p class="font-medium text-gray-800 capitalize">{{ t.tipo.replace('_',' ') }}</p>
-            <p class="text-xs text-gray-400">{{ t.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
-            <p *ngIf="t.descripcion" class="text-xs text-gray-500">{{ t.descripcion }}</p>
-          </div>
-          <div class="text-right">
-            <p [class]="t.tipo === 'pago_viaje' || t.tipo === 'retiro' ? 'text-red-600 font-bold' : 'text-green-600 font-bold'">
-              {{ t.tipo === 'pago_viaje' || t.tipo === 'retiro' ? '-' : '+' }}${{ t.monto | number:'1.2-2' }}
-            </p>
-            <p class="text-xs text-gray-400">Saldo: ${{ t.saldo_nuevo | number:'1.2-2' }}</p>
-          </div>
-        </div>
+      <div style="font-size:14px;color:var(--text-2);margin-top:12px">
+        Tu billetera UniRide
       </div>
-    </ng-container>
-  </ng-container>
+    </div>
+
+    <!-- Recharge card -->
+    <div style="padding:22px;background:#0F1426;color:#fff;border-radius:24px">
+      <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Recargar billetera</div>
+      <form [formGroup]="form" (ngSubmit)="recargar()" style="margin-top:14px">
+        <div style="padding:12px 14px;background:rgba(255,255,255,.08);border-radius:12px;display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:22px;font-weight:700;color:rgba(255,255,255,.4)">$</span>
+          <input formControlName="monto" type="number" min="1" placeholder="Monto"
+            style="flex:1;background:transparent;border:none;color:#fff;font-size:20px;font-weight:700;font-family:inherit;outline:none">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:14px">
+          <button *ngFor="let v of ['10000','25000','50000','100000']" type="button"
+            (click)="form.patchValue({monto: v})"
+            style="flex:1;padding:8px 0;text-align:center;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none"
+            [style.background]="form.value.monto == v ? 'var(--accent)' : 'rgba(255,255,255,.08)'"
+            [style.color]="form.value.monto == v ? '#1A0E00' : 'rgba(255,255,255,.85)'">
+            ${{ v === '10000' ? '10K' : v === '25000' ? '25K' : v === '50000' ? '50K' : '100K' }}
+          </button>
+        </div>
+        <button type="submit" [disabled]="form.invalid"
+          style="width:100%;padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:12px;display:flex;align-items:center;gap:10px;border:none;cursor:pointer;font-family:inherit">
+          <span style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span style="font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif">Recargar</span>
+        </button>
+      </form>
+    </div>
+
+  </div>
 </div>
+
+<!-- Tabs -->
+<div style="padding:36px 36px 0;border-bottom:1px solid var(--border);display:flex;gap:28px">
+  <div (click)="tab='pagos'" style="position:relative;padding:14px 4px;display:flex;align-items:center;gap:8px;cursor:pointer">
+    <span [style.font-weight]="tab==='pagos' ? '700' : '600'" [style.color]="tab==='pagos' ? 'var(--text)' : 'var(--text-3)'" style="font-size:15px">Pagos de viajes</span>
+    <span [style.background]="tab==='pagos' ? 'var(--uam-orange-100)' : 'var(--bg-soft)'" [style.color]="tab==='pagos' ? 'var(--accent)' : 'var(--text-3)'"
+      style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px">{{ (pagos$ | async)?.length ?? 0 }}</span>
+    <div *ngIf="tab==='pagos'" style="position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--text);border-radius:2px"></div>
+  </div>
+  <div (click)="tab='transacciones'" style="position:relative;padding:14px 4px;display:flex;align-items:center;gap:8px;cursor:pointer">
+    <span [style.font-weight]="tab==='transacciones' ? '700' : '600'" [style.color]="tab==='transacciones' ? 'var(--text)' : 'var(--text-3)'" style="font-size:15px">Transacciones</span>
+    <span [style.background]="tab==='transacciones' ? 'var(--uam-orange-100)' : 'var(--bg-soft)'" [style.color]="tab==='transacciones' ? 'var(--accent)' : 'var(--text-3)'"
+      style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px">{{ (transacciones$ | async)?.length ?? 0 }}</span>
+    <div *ngIf="tab==='transacciones'" style="position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--text);border-radius:2px"></div>
+  </div>
+</div>
+
+<!-- Pagos -->
+<ng-container *ngIf="tab === 'pagos'">
+  <ng-container *ngIf="pagos$ | async as pagos">
+    <div *ngIf="pagos.length === 0"
+      style="margin:24px 36px;padding:48px 24px;text-align:center;color:var(--text-3);background:var(--bg-soft);border-radius:20px;font-size:15px;font-weight:600">
+      Sin pagos registrados.
+    </div>
+    <div style="padding:20px 36px 36px">
+      <div *ngFor="let p of pagos; let i = index"
+        style="display:grid;grid-template-columns:40px 110px 1fr 100px 130px;gap:16px;align-items:center;padding:16px 12px;border-top:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:800;color:var(--text-3);font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+          {{ (i+1).toString().padStart(2,'0') }}
+        </div>
+        <div style="font-size:12.5px;color:var(--text-3);font-weight:600">{{ p.created_at | date:'dd/MM/yy · HH:mm' }}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Viaje #{{ p.viaje_id }}</div>
+        <span [class]="'badge-' + (p.estado === 'completado' ? 'finalizado' : p.estado === 'pendiente' ? 'pendiente' : 'cancelado')">
+          {{ p.estado }}
+        </span>
+        <div style="font-size:18px;font-weight:700;color:var(--text);text-align:right;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+          ${{ p.monto | number:'1.0-0' }}
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- Transacciones -->
+<ng-container *ngIf="tab === 'transacciones'">
+  <ng-container *ngIf="transacciones$ | async as transacciones">
+    <div *ngIf="transacciones.length === 0"
+      style="margin:24px 36px;padding:48px 24px;text-align:center;color:var(--text-3);background:var(--bg-soft);border-radius:20px;font-size:15px;font-weight:600">
+      Sin transacciones.
+    </div>
+    <div style="padding:20px 36px 36px">
+      <div *ngFor="let t of transacciones; let i = index"
+        style="display:grid;grid-template-columns:40px 1fr auto;gap:16px;align-items:center;padding:16px 12px;border-top:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:800;color:var(--text-3);font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+          {{ (i+1).toString().padStart(2,'0') }}
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--text);text-transform:capitalize">{{ t.tipo.replace('_',' ') }}</div>
+          <div style="font-size:12.5px;color:var(--text-3);margin-top:2px">{{ t.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div *ngIf="t.descripcion" style="font-size:12.5px;color:var(--text-2);margin-top:2px">{{ t.descripcion }}</div>
+        </div>
+        <div style="text-align:right">
+          <div [style.color]="(t.tipo === 'pago_viaje' || t.tipo === 'retiro') ? 'var(--danger)' : 'var(--success)'"
+            style="font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.015em">
+            {{ (t.tipo === 'pago_viaje' || t.tipo === 'retiro') ? '-' : '+' }}${{ t.monto | number:'1.0-0' }}
+          </div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px">Saldo: ${{ t.saldo_nuevo | number:'1.0-0' }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

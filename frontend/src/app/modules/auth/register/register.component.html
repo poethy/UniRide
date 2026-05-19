@@ -1,75 +1,122 @@
-<div class="min-h-screen bg-gradient-to-br from-primary-900 to-primary-600 flex items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8">
+<div class="min-h-screen flex flex-col lg:flex-row">
 
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-primary-700">UniRide</h1>
-      <p class="text-gray-500 mt-1 text-sm">Crea tu cuenta de estudiante</p>
+  <!-- Left panel — editorial copy -->
+  <div class="hidden lg:flex flex-col justify-between bg-[#0E1422] text-white p-12 w-[45%] shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-[#1E3A78] flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </div>
+      <span class="font-bold text-lg tracking-tight" style="font-family:'Space Grotesk',sans-serif">UniRide</span>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div>
+      <p class="ur-eyebrow text-gray-500 mb-6">Únete a la comunidad UAM</p>
+      <h1 class="ur-display text-5xl xl:text-6xl font-extrabold leading-[1.0] text-white">
+        Tu próximo<br>viaje empieza<br><span class="text-[#E8852A]">aquí.</span>
+      </h1>
+      <p class="text-gray-400 mt-6 text-base leading-relaxed max-w-xs">
+        Crea tu cuenta, elige tu rol y comienza a compartir rutas con estudiantes de la UAM.
+      </p>
+    </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-          <input formControlName="nombre" type="text" placeholder="Juan" class="input-field"
-            [class.border-red-400]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+    <p class="text-xs text-gray-600">UAM · Carpooling Universitario · 2026</p>
+  </div>
+
+  <!-- Right panel — form -->
+  <div class="flex-1 flex flex-col justify-center items-center bg-white px-6 py-12 overflow-y-auto">
+    <!-- Mobile logo -->
+    <div class="flex items-center gap-2 mb-8 lg:hidden">
+      <div class="w-8 h-8 rounded-xl bg-[#1E3A78] flex items-center justify-center">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </div>
+      <span class="font-bold text-gray-900 tracking-tight" style="font-family:'Space Grotesk',sans-serif">UniRide</span>
+    </div>
+
+    <div class="w-full max-w-sm">
+      <p class="ur-eyebrow mb-2">Crear cuenta</p>
+      <h2 class="ur-display text-3xl font-extrabold text-gray-900 mb-8">Registra tu perfil</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Nombre</label>
+            <input formControlName="nombre" type="text" placeholder="Juan" class="input-field"
+              [class.border-red-400]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Apellido</label>
+            <input formControlName="apellido" type="text" placeholder="Pérez" class="input-field"
+              [class.border-red-400]="form.get('apellido')?.invalid && form.get('apellido')?.touched">
+          </div>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-          <input formControlName="apellido" type="text" placeholder="Pérez" class="input-field"
-            [class.border-red-400]="form.get('apellido')?.invalid && form.get('apellido')?.touched">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Correo electrónico</label>
+          <input formControlName="email" type="email" placeholder="correo@uam.edu.co" class="input-field"
+            [class.border-red-400]="form.get('email')?.invalid && form.get('email')?.touched">
         </div>
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-        <input formControlName="email" type="email" placeholder="correo@universidad.edu.co" class="input-field"
-          [class.border-red-400]="form.get('email')?.invalid && form.get('email')?.touched">
-      </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Contraseña</label>
+          <input formControlName="password" type="password" placeholder="Mínimo 6 caracteres" class="input-field"
+            [class.border-red-400]="form.get('password')?.invalid && form.get('password')?.touched">
+          <p *ngIf="form.get('password')?.hasError('minlength') && form.get('password')?.touched"
+            class="text-red-500 text-xs mt-1">Mínimo 6 caracteres</p>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-        <input formControlName="password" type="password" placeholder="Mínimo 6 caracteres" class="input-field"
-          [class.border-red-400]="form.get('password')?.invalid && form.get('password')?.touched">
-        <p *ngIf="form.get('password')?.hasError('minlength') && form.get('password')?.touched"
-          class="text-red-500 text-xs mt-1">Mínimo 6 caracteres</p>
-      </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Universidad</label>
+          <input formControlName="universidad" type="text" placeholder="Ej: Universidad Autónoma de Manizales" class="input-field">
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Universidad</label>
-        <input formControlName="universidad" type="text" placeholder="Ej: Universidad Nacional" class="input-field">
-      </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Código estudiantil</label>
+          <input formControlName="codigo_estudiantil" type="text" placeholder="Ej: 1234567" class="input-field">
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Código estudiantil</label>
-        <input formControlName="codigo_estudiantil" type="text" placeholder="Ej: 1234567" class="input-field">
-      </div>
+        <!-- Role selector -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tipo de cuenta</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label *ngFor="let opt of [{id:3,label:'Pasajero'},{id:2,label:'Conductor'},{id:1,label:'Admin'}]"
+              class="relative cursor-pointer">
+              <input type="radio" formControlName="rol_id" [value]="opt.id" class="peer sr-only">
+              <div class="border-2 border-gray-200 peer-checked:border-[#1E3A78] peer-checked:bg-[#E8EDF7] rounded-xl px-3 py-2.5 text-center text-xs font-semibold text-gray-500 peer-checked:text-[#1E3A78] transition-all hover:border-gray-300">
+                {{ opt.label }}
+              </div>
+            </label>
+          </div>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de cuenta</label>
-        <select formControlName="rol_id" class="input-field">
-          <option [value]="3">Pasajero</option>
-          <option [value]="2">Conductor</option>
-          <option [value]="1">Administrador</option>
-        </select>
-      </div>
+        <button type="submit" [disabled]="loading"
+          class="w-full mt-2 flex items-center justify-between bg-gray-900 hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-5 py-3.5 rounded-xl transition-colors">
+          <span *ngIf="!loading">Crear cuenta</span>
+          <span *ngIf="loading" class="flex items-center gap-2">
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            Registrando...
+          </span>
+          <span *ngIf="!loading"
+            class="w-8 h-8 rounded-full bg-[#E8852A] flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </button>
 
-      <button type="submit" [disabled]="loading" class="btn-primary w-full py-3 text-base mt-2">
-        <span *ngIf="!loading">Crear cuenta</span>
-        <span *ngIf="loading" class="flex items-center justify-center gap-2">
-          <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-          </svg>
-          Registrando...
-        </span>
-      </button>
+      </form>
 
-    </form>
-
-    <p class="text-center text-sm text-gray-500 mt-6">
-      ¿Ya tienes cuenta?
-      <a routerLink="/auth/login" class="text-primary-600 font-medium hover:underline">Inicia sesión</a>
-    </p>
+      <p class="text-sm text-gray-500 mt-6">
+        ¿Ya tienes cuenta?
+        <a routerLink="/auth/login" class="text-[#1E3A78] font-semibold hover:underline ml-1">Inicia sesión</a>
+      </p>
+    </div>
   </div>
 </div>

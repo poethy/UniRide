@@ -56,4 +56,5 @@ export class CalificacionesComponent implements OnInit {
   get promedioRedondeado(): number { return this.promedio ? Math.round(this.promedio) : 0; }
   estrellas(n: number): number[] { return Array(n).fill(0); }
   estrellasVacias(n: number): number[] { return Array(5 - n).fill(0); }
+  ratingCount(lista: Calificacion[], n: number): number { return lista.filter(c => c.puntaje === n).length; }
 }

@@ -1,115 +1,137 @@
-<div class="space-y-6">
-
-  <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-gray-800">Viajes</h2>
-    <button *ngIf="!auth.hasRole('conductor')" (click)="showForm = !showForm" class="btn-primary">
-      + Solicitar viaje
-    </button>
+<!-- Page header -->
+<div style="padding:24px 36px 0;display:flex;align-items:flex-end;justify-content:space-between">
+  <div>
+    <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Tu historial</div>
+    <div style="font-size:44px;font-weight:700;color:var(--text);letter-spacing:-.035em;line-height:1;margin-top:8px;font-family:'Space Grotesk','Plus Jakarta Sans',sans-serif">Tus viajes</div>
+    <div style="font-size:14px;color:var(--text-2);margin-top:8px">Todos tus trayectos y solicitudes</div>
   </div>
+  <button *ngIf="!auth.hasRole('conductor')" (click)="showForm = !showForm"
+    style="padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:16px;display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer">
+    <span style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+    </span>
+    <div>
+      <div style="font-size:10px;opacity:.55;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Nuevo trayecto</div>
+      <div style="font-size:15px;font-weight:700;letter-spacing:-.015em;font-family:'Space Grotesk',sans-serif">Solicitar viaje</div>
+    </div>
+  </button>
+</div>
 
-  <!-- Formulario nuevo viaje -->
-  <div *ngIf="showForm" class="card">
-    <h3 class="font-semibold text-gray-700 mb-4">Nuevo viaje</h3>
-    <form [formGroup]="form" (ngSubmit)="solicitar()" class="space-y-4">
+<!-- Form nuevo viaje -->
+<div *ngIf="showForm" style="margin:24px 36px 0;padding:24px;background:var(--bg-soft);border-radius:20px;border:1px solid var(--border)">
+  <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:18px;font-family:'Space Grotesk',sans-serif">Nuevo viaje</div>
+  <form [formGroup]="form" (ngSubmit)="solicitar()">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Ruta</label>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Ruta</label>
         <select formControlName="ruta_id" class="input-field">
           <option value="">Selecciona una ruta</option>
-          <option *ngFor="let ruta of rutas" [value]="ruta.id">
-            {{ ruta.origen_descripcion }} → {{ ruta.destino_descripcion }}
-          </option>
+          <option *ngFor="let ruta of rutas" [value]="ruta.id">{{ ruta.origen_descripcion }} → {{ ruta.destino_descripcion }}</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Precio sugerido ($)</label>
-        <input formControlName="precio" type="number" min="0" class="input-field" placeholder="0.00">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Precio sugerido ($)</label>
+        <input formControlName="precio" type="number" min="0" class="input-field" placeholder="0">
       </div>
-      <div class="flex gap-3">
-        <button type="submit" [disabled]="form.invalid" class="btn-primary">Solicitar</button>
-        <button type="button" (click)="showForm = false" class="btn-secondary">Cancelar</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Filtros -->
-  <div class="flex gap-2 flex-wrap">
-    <button *ngFor="let e of ['','pendiente','aceptado','en_curso','finalizado','cancelado']"
-      (click)="filtroEstado = e; cargar()"
-      [class.ring-2]="filtroEstado === e"
-      [class.ring-primary-500]="filtroEstado === e"
-      class="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
-      {{ e || 'Todos' }}
-    </button>
-  </div>
-
-  <!-- Lista reactiva -->
-  <ng-container *ngIf="viajes$ | async as lista">
-    <div *ngIf="lista.length === 0" class="card text-center py-12 text-gray-400">
-      No hay viajes para mostrar.
     </div>
+    <div style="display:flex;gap:10px">
+      <button type="submit" [disabled]="form.invalid"
+        style="padding:10px 22px;background:var(--text);color:var(--bg);border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer">Solicitar</button>
+      <button type="button" (click)="showForm = false"
+        style="padding:10px 22px;background:transparent;color:var(--text-2);border-radius:12px;border:1.5px solid var(--border-strong);font-weight:700;font-size:14px;cursor:pointer">Cancelar</button>
+    </div>
+  </form>
+</div>
 
-    <div class="space-y-3">
-      <div *ngFor="let viaje of lista" class="card hover:shadow-md transition-shadow">
-        <div class="flex items-start justify-between gap-4">
+<!-- Filter pills -->
+<div style="padding:28px 36px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+  <button *ngFor="let e of ['','pendiente','aceptado','en_curso','finalizado','cancelado']"
+    (click)="filtroEstado = e; cargar()"
+    [style.background]="filtroEstado === e ? 'var(--text)' : 'transparent'"
+    [style.color]="filtroEstado === e ? 'var(--bg)' : 'var(--text-2)'"
+    [style.border]="filtroEstado === e ? '1.5px solid transparent' : '1.5px solid var(--border-strong)'"
+    style="display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;font-size:13.5px;font-weight:700;cursor:pointer">
+    {{ e ? e.replace('_',' ') : 'Todos' }}
+  </button>
+</div>
 
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
-              <span class="text-xs text-gray-400">#{{ viaje.id }}</span>
-            </div>
-            <p class="font-medium text-gray-800 truncate">
-              {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
-            </p>
-            <p class="text-xs text-gray-400 mt-1">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
-            <p *ngIf="viaje.precio" class="text-sm font-semibold text-green-600 mt-1">
-              ${{ viaje.precio | number:'1.2-2' }}
-            </p>
-          </div>
+<!-- Trip list -->
+<ng-container *ngIf="viajes$ | async as lista">
+  <div *ngIf="lista.length === 0"
+    style="margin:24px 36px;padding:48px 24px;text-align:center;color:var(--text-3);background:var(--bg-soft);border-radius:20px;font-size:15px;font-weight:600">
+    No hay viajes para mostrar.
+  </div>
 
-          <div class="flex flex-col gap-2 shrink-0">
-            <!-- Seguimiento (en curso) -->
-            <button *ngIf="viaje.estado === 'en_curso'" (click)="verSeguimiento(viaje)"
-              class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-              Seguimiento
-            </button>
-            <!-- Calificar: pasajero califica conductor -->
-            <button
-              *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
-              (click)="calificarViaje(viaje)"
-              class="text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg py-1.5 px-3 flex items-center gap-1 transition-colors">
-              <span>★</span> Calificar
-            </button>
-            <!-- Calificar: conductor califica pasajero -->
-            <button
-              *ngIf="auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.pasajero && viaje.conductor?.id === auth.currentUser?.id"
-              (click)="calificarViaje(viaje)"
-              class="text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg py-1.5 px-3 flex items-center gap-1 transition-colors">
-              <span>★</span> Calificar
-            </button>
-            <ng-container *ngIf="auth.hasRole('conductor')">
-              <button *ngIf="viaje.estado === 'pendiente'" (click)="aceptar(viaje)"
-                class="btn-primary text-xs py-1.5 px-3">Aceptar</button>
-              <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
-                (click)="cambiarEstado(viaje, 'iniciar')"
-                class="btn-primary text-xs py-1.5 px-3">Iniciar</button>
-              <button *ngIf="viaje.estado === 'en_curso' && viaje.conductor?.id === auth.currentUser?.id"
-                (click)="cambiarEstado(viaje, 'finalizar')"
-                class="btn-primary text-xs py-1.5 px-3">Finalizar</button>
-              <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
-                (click)="cancelar(viaje)"
-                class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
-            </ng-container>
-            <ng-container *ngIf="!auth.hasRole('conductor')">
-              <button *ngIf="['pendiente','aceptado'].includes(viaje.estado)"
-                (click)="cancelar(viaje)"
-                class="btn-danger text-xs py-1.5 px-3">Cancelar</button>
-            </ng-container>
-          </div>
+  <div style="padding:24px 36px 36px">
+    <div *ngFor="let viaje of lista; let i = index"
+      style="margin-bottom:14px;padding:28px;border-radius:24px;background:var(--bg-soft);display:grid;grid-template-columns:70px 1fr 220px;gap:28px;align-items:center">
 
+      <!-- Big index number -->
+      <div style="font-size:60px;font-weight:700;color:var(--text);letter-spacing:-.04em;line-height:1;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+        {{ (i+1).toString().padStart(2,'0') }}
+      </div>
+
+      <!-- Route info -->
+      <div>
+        <span [class]="'badge-' + viaje.estado">{{ viaje.estado.replace('_',' ') }}</span>
+        <div style="font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.025em;margin-top:10px;line-height:1.15;font-family:'Space Grotesk',sans-serif">
+          {{ viaje.ruta?.origen_descripcion }}
+          <span style="color:var(--text-3);margin:0 6px">→</span>
+          {{ viaje.ruta?.destino_descripcion }}
+        </div>
+        <div style="display:flex;gap:20px;margin-top:12px;font-size:13px;color:var(--text-2);flex-wrap:wrap">
+          <span><span style="color:var(--text-3);font-weight:700">FECHA</span> · {{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</span>
+          <span *ngIf="viaje.conductor"><span style="color:var(--text-3);font-weight:700">CONDUCTOR</span> · {{ viaje.conductor.nombre }} {{ viaje.conductor.apellido }}</span>
+        </div>
+      </div>
+
+      <!-- Price + actions -->
+      <div style="text-align:right">
+        <div *ngIf="viaje.precio"
+          style="font-size:32px;font-weight:700;color:var(--text);letter-spacing:-.025em;line-height:1;font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums">
+          ${{ viaje.precio | number:'1.0-0' }}
+        </div>
+
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          <button *ngIf="viaje.estado === 'en_curso'" (click)="verSeguimiento(viaje)"
+            style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--brand);color:#fff;border-radius:999px;border:none;font-size:12.5px;font-weight:800;cursor:pointer">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.7)"></span>
+            Seguimiento
+          </button>
+          <button
+            *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
+            (click)="calificarViaje(viaje)"
+            style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#1A0E00;border-radius:999px;border:none;font-size:12.5px;font-weight:800;cursor:pointer">
+            ★ Calificar
+          </button>
+          <button
+            *ngIf="auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.pasajero && viaje.conductor?.id === auth.currentUser?.id"
+            (click)="calificarViaje(viaje)"
+            style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#1A0E00;border-radius:999px;border:none;font-size:12.5px;font-weight:800;cursor:pointer">
+            ★ Calificar
+          </button>
+
+          <ng-container *ngIf="auth.hasRole('conductor')">
+            <button *ngIf="viaje.estado === 'pendiente'" (click)="aceptar(viaje)"
+              style="padding:8px 18px;background:var(--brand);color:#fff;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Aceptar</button>
+            <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
+              (click)="cambiarEstado(viaje, 'iniciar')"
+              style="padding:8px 18px;background:var(--brand);color:#fff;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Iniciar</button>
+            <button *ngIf="viaje.estado === 'en_curso' && viaje.conductor?.id === auth.currentUser?.id"
+              (click)="cambiarEstado(viaje, 'finalizar')"
+              style="padding:8px 18px;background:var(--success);color:#fff;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Finalizar</button>
+            <button *ngIf="viaje.estado === 'aceptado' && viaje.conductor?.id === auth.currentUser?.id"
+              (click)="cancelar(viaje)"
+              style="padding:8px 18px;background:var(--danger);color:#fff;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Cancelar</button>
+          </ng-container>
+
+          <ng-container *ngIf="!auth.hasRole('conductor')">
+            <button *ngIf="viaje.estado === 'pendiente' || viaje.estado === 'aceptado'"
+              (click)="cancelar(viaje)"
+              style="padding:8px 18px;background:var(--danger);color:#fff;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Cancelar</button>
+          </ng-container>
         </div>
       </div>
     </div>
-  </ng-container>
-
-</div>
+  </div>
+</ng-container>

@@ -1,32 +1,27 @@
-<nav class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-  <a routerLink="/dashboard" class="flex items-center gap-2 font-bold text-xl text-primary-700">
-    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+<div style="display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:18px 36px 0">
+
+  <!-- Bell -->
+  <a routerLink="/notificaciones"
+     style="width:40px;height:40px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;text-decoration:none;color:var(--text)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9a6 6 0 1112 0v4l2 3H4l2-3V9z"/><path d="M10 19a2 2 0 004 0"/>
     </svg>
-    UniRide
+    <span *ngIf="noLeidas > 0"
+      style="position:absolute;top:7px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--accent);border:1.5px solid var(--bg)"></span>
   </a>
 
-  <div class="flex items-center gap-4">
-    <a routerLink="/notificaciones" class="relative text-gray-500 hover:text-primary-600">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a1 1 0 10-2 0v1.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z"/>
-      </svg>
-      <span *ngIf="noLeidas > 0"
-        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-        {{ noLeidas }}
-      </span>
-    </a>
-
-    <div class="flex items-center gap-2 text-sm">
-      <span class="text-gray-700 font-medium">{{ usuario?.nombre }}</span>
-      <button (click)="logout()" class="text-gray-400 hover:text-red-500 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/>
-        </svg>
-      </button>
+  <!-- User pill -->
+  <div style="height:40px;padding-right:14px;padding-left:6px;border-radius:999px;background:var(--bg-soft);display:flex;align-items:center;gap:10px">
+    <div style="width:30px;height:30px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">
+      {{ usuario?.nombre?.charAt(0)?.toUpperCase() }}{{ usuario?.apellido?.charAt(0)?.toUpperCase() }}
     </div>
+    <span style="font-size:13.5px;font-weight:700;color:var(--text)">{{ usuario?.nombre }}</span>
+    <button (click)="logout()" title="Cerrar sesión"
+      style="background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;color:var(--text-3)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </button>
   </div>
-</nav>
+
+</div>

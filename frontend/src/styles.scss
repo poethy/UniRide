@@ -1,26 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --uam-navy: #1E3A78;
+  --uam-navy-700: #16285A;
+  --uam-navy-100: #E8EDF7;
+  --uam-orange: #E8852A;
+  --uam-orange-700: #C26A19;
+  --uam-orange-100: #FBEEDD;
+
+  --brand: var(--uam-navy);
+  --accent: var(--uam-orange);
+  --success: #1F9D6F;
+  --danger: #D14343;
+  --warning: #E8B22A;
+
+  --bg: #FFFFFF;
+  --bg-soft: #F6F7F9;
+  --bg-tint: #EEF1F6;
+  --surface: #FFFFFF;
+  --text: #0E1422;
+  --text-2: #4B5468;
+  --text-3: #8A93A6;
+  --border: #E5E8EE;
+  --border-strong: #D2D7E0;
+
+  --r-xs: 6px; --r-sm: 10px; --r-md: 14px;
+  --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+
+  --sh-1: 0 1px 2px rgba(15,20,36,.06), 0 1px 1px rgba(15,20,36,.03);
+  --sh-2: 0 4px 14px rgba(15,20,36,.06), 0 2px 4px rgba(15,20,36,.04);
+  --sh-3: 0 12px 28px rgba(15,20,36,.10), 0 4px 8px rgba(15,20,36,.06);
+
+  --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --card-bg: #FFFFFF;
+  --card-shadow: var(--sh-1);
+  --card-border: 1px solid transparent;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-ui);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+  }
+}
+
 @layer components {
+
+  /* ── Buttons ── */
   .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm;
+    background: var(--brand); color: #fff;
+    &:hover { background: var(--uam-navy-700); }
   }
   .btn-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply inline-flex items-center justify-center bg-[--bg-soft] text-[--text-2] font-semibold py-2 px-4 rounded-xl transition-all duration-200 text-sm border border-[--border];
+    &:hover { background: var(--bg-tint); }
   }
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply inline-flex items-center justify-center bg-[#D14343] hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 text-sm;
   }
+  .btn-accent {
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-xl transition-all duration-200 text-sm;
+    background: var(--accent); color: #1A0E00;
+    &:hover { background: var(--uam-orange-700); }
+  }
+  .btn-dark {
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-xl transition-all duration-200 text-sm;
+    background: var(--text); color: var(--bg);
+    &:hover { opacity: 0.88; }
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-xl transition-all duration-200 text-sm;
+    border: 1.5px solid var(--border-strong); color: var(--text-2); background: transparent;
+    &:hover { background: var(--bg-soft); }
+  }
+
+  /* ── Input ── */
   .input-field {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply w-full rounded-xl px-4 py-2.5 text-sm transition-all;
+    border: 1.5px solid var(--border); background: var(--bg-soft); color: var(--text);
+    &:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(30,58,120,.1); }
   }
+
+  /* ── Card ── */
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    @apply rounded-2xl p-6;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
   }
-  .badge-pendiente   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800; }
-  .badge-aceptado    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800; }
-  .badge-en_curso    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800; }
-  .badge-finalizado  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800; }
-  .badge-cancelado   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800; }
+  .card-soft {
+    @apply rounded-2xl p-6;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Status badges — design system mapping ── */
+  .badge-pendiente  {
+    display: inline-flex; align-items: center;
+    padding: 5px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--warning); color: #3d2700;
+  }
+  .badge-aceptado   {
+    display: inline-flex; align-items: center;
+    padding: 5px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--brand); color: #fff;
+  }
+  .badge-en_curso   {
+    display: inline-flex; align-items: center;
+    padding: 5px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: #7C3AED; color: #fff;
+  }
+  .badge-finalizado {
+    display: inline-flex; align-items: center;
+    padding: 5px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--success); color: #fff;
+  }
+  .badge-cancelado  {
+    display: inline-flex; align-items: center;
+    padding: 5px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--danger); color: #fff;
+  }
+
+  /* ── Typography helpers ── */
+  .ur-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+  }
+  .ur-eyebrow {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .ur-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Filter pill ── */
+  .filter-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 38px; padding: 0 16px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 700; cursor: pointer;
+    border: 1.5px solid var(--border-strong);
+    background: transparent; color: var(--text-2);
+    transition: all 0.15s;
+    &.active { background: var(--text); color: var(--bg); border-color: transparent; }
+    &:hover:not(.active) { background: var(--bg-soft); }
+    .pill-count { font-size: 11px; font-weight: 700; color: var(--text-3); }
+    &.active .pill-count { color: var(--accent); }
+  }
+
+  /* ── Tab item ── */
+  .tab-item {
+    position: relative; padding: 14px 4px;
+    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    .tab-label { font-size: 15px; font-weight: 600; color: var(--text-3); }
+    .tab-count { font-size: 11px; font-weight: 700; color: var(--text-3); background: var(--bg-soft); padding: 2px 7px; border-radius: 999px; }
+    &.active {
+      .tab-label { font-weight: 700; color: var(--text); }
+      .tab-count { color: var(--accent); background: var(--uam-orange-100); }
+      &::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--text); border-radius: 2px; }
+    }
+  }
 }

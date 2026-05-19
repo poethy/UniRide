@@ -1,253 +1,274 @@
-<div class="space-y-6">
+<div style="padding:8px 36px 40px">
 
-  <!-- ═══════════════════════════════════════════════════════════
-       SEGUIMIENTO EN CURSO (aparece automáticamente si hay viaje activo)
-  ════════════════════════════════════════════════════════════════ -->
+  <!-- ══ VIAJE EN CURSO ══════════════════════════════════════════════════ -->
   <ng-container *ngIf="viajeEnCurso">
-    <div class="rounded-2xl overflow-hidden border border-indigo-200 shadow-sm bg-white">
-
-      <!-- Banner de estado -->
-      <div class="bg-indigo-600 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
-          <p class="text-white font-semibold text-sm">Viaje en curso</p>
+    <div style="margin-bottom:28px;border-radius:20px;overflow:hidden;border:1px solid rgba(30,58,120,.18);background:var(--surface);box-shadow:var(--sh-2)">
+      <div style="background:var(--brand);padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 1.5s infinite"></span>
+          <span style="color:#fff;font-weight:700;font-size:14px">Viaje en curso</span>
         </div>
-        <span class="text-indigo-200 text-xs">
-          {{ viajeEnCurso.fecha_inicio | date:'HH:mm' }} · #{{ viajeEnCurso.id }}
-        </span>
+        <span style="color:rgba(255,255,255,.7);font-size:12px">{{ viajeEnCurso.fecha_inicio | date:'HH:mm' }} · #{{ viajeEnCurso.id }}</span>
       </div>
-
-      <!-- Contenido: persona + mapa -->
-      <div class="p-4 space-y-4">
-
-        <!-- Tarjeta de la otra persona -->
-        <div class="flex items-center gap-3">
-          <!-- Avatar -->
-          <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden shrink-0 border-2 border-gray-200">
-            <img *ngIf="otraPersona?.foto_perfil"
-                 [src]="otraPersona?.foto_perfil"
-                 class="w-full h-full object-cover"
-                 [alt]="otraPersona?.nombre">
-            <div *ngIf="!otraPersona?.foto_perfil"
-                 class="w-full h-full flex items-center justify-center text-lg font-bold text-gray-400">
-              {{ otraPersona?.nombre?.charAt(0)?.toUpperCase() }}
-            </div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--text-2);flex-shrink:0;border:2px solid var(--border)">
+            {{ otraPersona?.nombre?.charAt(0)?.toUpperCase() }}
           </div>
-
-          <!-- Datos -->
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-gray-800">
-              {{ otraPersona?.nombre }} {{ otraPersona?.apellido }}
-            </p>
-            <p class="text-xs text-gray-500">{{ esConductor ? 'Pasajero' : 'Conductor' }}</p>
-
-            <!-- Info vehículo (solo para pasajero) -->
-            <ng-container *ngIf="!esConductor && viajeEnCurso.vehiculo">
-              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-xs text-gray-500">
-                <span class="font-medium">
-                  {{ viajeEnCurso.vehiculo.marca }} {{ viajeEnCurso.vehiculo.modelo }}
-                </span>
-                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono font-semibold tracking-wider text-gray-700">
-                  {{ viajeEnCurso.vehiculo.placa }}
-                </span>
-              </div>
-            </ng-container>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:15px">{{ otraPersona?.nombre }} {{ otraPersona?.apellido }}</div>
+            <div style="font-size:12px;color:var(--text-3)">{{ esConductor ? 'Pasajero' : 'Conductor' }}</div>
           </div>
-
-          <!-- Precio -->
-          <div class="text-right shrink-0">
-            <p class="text-xs text-gray-400">Precio</p>
-            <p class="font-bold text-green-600">${{ viajeEnCurso.precio | number:'1.0-0' }}</p>
-          </div>
+          <div style="margin-left:auto;font-weight:800;color:var(--success);font-size:16px">${{ viajeEnCurso.precio | number:'1.0-0' }}</div>
         </div>
-
-        <!-- Ruta (origen → destino) -->
-        <div class="bg-gray-50 rounded-xl px-4 py-3 text-sm space-y-1.5">
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0"></span>
-            <span class="truncate">{{ viajeEnCurso.ruta?.origen_descripcion }}</span>
-          </div>
-          <div class="ml-[4px] border-l-2 border-dashed border-gray-300 h-3"></div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
-            <span class="truncate">{{ viajeEnCurso.ruta?.destino_descripcion }}</span>
-          </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3)">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);display:inline-block"></span>{{ firstPart(viajeEnCurso.ruta?.origen_descripcion) }}</span>
+          <span style="color:var(--border-strong)">→</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:3px;background:var(--accent);display:inline-block"></span>{{ firstPart(viajeEnCurso.ruta?.destino_descripcion) }}</span>
         </div>
-
-        <!-- Mapa Leaflet -->
-        <div class="rounded-xl overflow-hidden border border-gray-200">
-          <div class="px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-            <p class="text-xs font-medium text-gray-600">Mapa del recorrido</p>
-            <div class="flex items-center gap-1.5 text-xs"
-                 [class.text-indigo-600]="esConductor"
-                 [class.text-gray-400]="!esConductor">
-              <span class="w-1.5 h-1.5 rounded-full animate-pulse"
-                    [class.bg-indigo-500]="esConductor"
-                    [class.bg-gray-400]="!esConductor"></span>
-              {{ esConductor ? 'Compartiendo ubicación' : 'Rastreando conductor' }}
-            </div>
-          </div>
-
-          <div #mapDashEl style="height:280px;width:100%;"></div>
-
-          <!-- Leyenda -->
-          <div class="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center gap-4 text-xs text-gray-400">
-            <span class="flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Origen
-            </span>
-            <span class="flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Destino
-            </span>
-            <span class="flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Conductor
-            </span>
-          </div>
-        </div>
-
       </div>
+      <div #mapDashEl style="height:220px;width:100%"></div>
     </div>
   </ng-container>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       SALUDO
-  ════════════════════════════════════════════════════════════════ -->
-  <div>
-    <h2 class="text-2xl font-bold text-gray-800">
-      Hola, {{ usuario?.nombre }} 👋
-    </h2>
-    <p class="text-gray-500 text-sm mt-1">
-      <ng-container *ngIf="auth.hasRole('conductor')">Gestiona tus viajes y vehículos</ng-container>
-      <ng-container *ngIf="auth.hasRole('administrador')">Panel de administración de UniRide</ng-container>
-      <ng-container *ngIf="!auth.hasRole('conductor') && !auth.hasRole('administrador')">Aquí tienes un resumen de tu actividad</ng-container>
-    </p>
-  </div>
+  <!-- ══ HEADER ═══════════════════════════════════════════════════════════ -->
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:32px;align-items:flex-end;padding-top:4px">
 
-  <!-- ═══════════════════════════════════════════════════════════
-       TARJETAS DE RESUMEN
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-    <div class="card flex items-center gap-4">
-      <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    <div>
+      <div class="ur-display" style="font-size:13px;font-weight:800;color:var(--accent);letter-spacing:0.14em;text-transform:uppercase">{{ fechaHoy }}</div>
+      <div class="ur-display" style="font-size:72px;font-weight:700;line-height:0.92;letter-spacing:-0.04em;color:var(--text);margin-top:12px">
+        Hola,<br>
+        <span style="color:var(--accent)">{{ usuario?.nombre }}.</span>
       </div>
-      <div>
-        <p class="text-sm text-gray-500">
-          {{ auth.hasRole('conductor') ? 'Ganancias acumuladas' : 'Saldo billetera' }}
-        </p>
-        <p class="text-2xl font-bold text-gray-800">${{ usuario?.saldo_billetera | number:'1.2-2' }}</p>
+      <div style="font-size:16px;color:var(--text-2);margin-top:16px;max-width:480px">
+        <ng-container *ngIf="proxViaje && proxViaje.estado === 'aceptado'">
+          Tu próximo viaje a <b style="color:var(--text)">{{ firstPart(proxViaje.ruta?.destino_descripcion) }}</b> está confirmado. ¡Todo listo!
+        </ng-container>
+        <ng-container *ngIf="proxViaje && proxViaje.estado === 'pendiente'">
+          Tienes un viaje pendiente a <b style="color:var(--text)">{{ firstPart(proxViaje.ruta?.destino_descripcion) }}</b>. Esperando conductor.
+        </ng-container>
+        <ng-container *ngIf="!proxViaje && !loading">
+          Hoy es un buen día para explorar rutas. ¿A dónde vas?
+        </ng-container>
       </div>
     </div>
 
-    <div class="card flex items-center gap-4">
-      <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">
-          {{ auth.hasRole('conductor') ? 'Viajes realizados' : 'Total viajes' }}
-        </p>
-        <p class="text-2xl font-bold text-gray-800">{{ totalViajes }}</p>
-      </div>
-    </div>
-
-    <div class="card flex items-center gap-4">
-      <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">Viajes activos</p>
-        <p class="text-2xl font-bold text-gray-800">{{ viajesActivos }}</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       ACCIONES RÁPIDAS
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="card">
-    <h3 class="font-semibold text-gray-700 mb-4">Acciones rápidas</h3>
-    <div class="flex flex-wrap gap-3">
-
-      <ng-container *ngIf="!auth.hasRole('conductor') && !auth.hasRole('administrador')">
-        <a routerLink="/viajes" class="btn-primary">Solicitar viaje</a>
-        <a routerLink="/rutas" class="btn-secondary">Ver rutas</a>
-        <a routerLink="/pagos" class="btn-secondary">Recargar billetera</a>
-      </ng-container>
-
-      <ng-container *ngIf="auth.hasRole('conductor')">
-        <a routerLink="/viajes" class="btn-primary">Ver mis viajes</a>
-        <a routerLink="/vehiculos" class="btn-secondary">Mis vehículos</a>
-        <a routerLink="/rutas" class="btn-secondary">Mis rutas</a>
-        <a routerLink="/calificaciones" class="btn-secondary">Mis calificaciones</a>
-      </ng-container>
-
-      <ng-container *ngIf="auth.hasRole('administrador')">
-        <a routerLink="/viajes" class="btn-primary">Ver viajes</a>
-        <a routerLink="/usuarios" class="btn-secondary">Gestionar usuarios</a>
-        <a routerLink="/reportes" class="btn-secondary">Ver reportes</a>
-        <a routerLink="/vehiculos" class="btn-secondary">Vehículos</a>
-      </ng-container>
-
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       VIAJES RECIENTES
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="card">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-gray-700">
-        {{ auth.hasRole('conductor') ? 'Últimos viajes gestionados' : 'Viajes recientes' }}
-      </h3>
-      <a routerLink="/viajes" class="text-primary-600 text-sm hover:underline">Ver todos</a>
-    </div>
-
-    <div *ngIf="loading" class="text-center py-8 text-gray-400">Cargando...</div>
-
-    <div *ngIf="!loading && viajesRecientes.length === 0"
-         class="text-center py-8 text-gray-400 text-sm">
-      <ng-container *ngIf="auth.hasRole('conductor')">No tienes viajes asignados aún.</ng-container>
-      <ng-container *ngIf="!auth.hasRole('conductor')">No tienes viajes aún. ¡Solicita tu primer viaje!</ng-container>
-    </div>
-
-    <div *ngIf="!loading && viajesRecientes.length > 0" class="divide-y divide-gray-100">
-      <div *ngFor="let viaje of viajesRecientes" class="py-3 flex items-center justify-between gap-3">
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-800 truncate">
-            {{ viaje.ruta?.origen_descripcion }} → {{ viaje.ruta?.destino_descripcion }}
-          </p>
-          <p class="text-xs text-gray-400 mt-0.5">{{ viaje.fecha_solicitud | date:'dd/MM/yyyy HH:mm' }}</p>
-          <p *ngIf="auth.hasRole('conductor') && viaje.pasajero" class="text-xs text-gray-500 mt-0.5">
-            Pasajero: {{ viaje.pasajero?.nombre }} {{ viaje.pasajero?.apellido }}
-          </p>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:14px">
+      <a routerLink="/viajes"
+         style="padding:12px 18px 12px 12px;background:var(--text);color:var(--bg);border-radius:16px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#1A0E00;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <!-- Botón calificar: pasajero califica conductor -->
-          <button
-            *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
+        <div>
+          <div style="font-size:10px;opacity:0.55;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">¿A dónde vamos?</div>
+          <div class="ur-display" style="font-size:15px;font-weight:700;letter-spacing:-0.015em">Pedir un viaje</div>
+        </div>
+      </a>
+      <div style="font-size:12.5px;color:var(--text-3)">⌘K para buscar destino</div>
+    </div>
+  </div>
+
+  <!-- ══ STATS ══════════════════════════════════════════════════════════ -->
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-top:36px">
+
+    <!-- Saldo -->
+    <div style="padding:24px 28px;background:#0F1426;color:#fff;border-radius:24px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:var(--accent);opacity:0.18;pointer-events:none"></div>
+      <div style="position:relative">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="ur-display" style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:0.14em;text-transform:uppercase">Saldo disponible</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">Actualizado hoy {{ today | date:'HH:mm' }}</div>
+        </div>
+        <div class="ur-display ur-mono" style="font-size:72px;font-weight:700;margin-top:16px;line-height:0.92;letter-spacing:-0.045em;display:flex;align-items:flex-start;gap:6px">
+          <span style="font-size:28px;color:rgba(255,255,255,.5);line-height:1.4;margin-top:4px">$</span>
+          <span>{{ formatMonto(usuario?.saldo_billetera) }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px;margin-top:18px">
+          <a routerLink="/pagos"
+             style="display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;background:var(--accent);border-radius:999px;color:#1A0E00;text-decoration:none">
+            <div style="width:24px;height:24px;border-radius:50%;background:#1A0E00;color:var(--accent);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <span style="font-size:13px;font-weight:800">Recargar</span>
+          </a>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.65)">
+            Te alcanza para ≈ <b style="color:#fff">{{ viajesAlcance }} viajes</b> a la UAM
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Viajes este mes -->
+    <div style="padding:24px;background:var(--bg-soft);color:var(--text);border-radius:24px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;opacity:0.7">Viajes este mes</div>
+      <div class="ur-display ur-mono" style="font-size:56px;font-weight:700;margin-top:14px;line-height:0.92;letter-spacing:-0.04em">{{ totalViajes }}</div>
+      <div style="font-size:12.5px;margin-top:8px;color:var(--text-3);font-weight:600">
+        <ng-container *ngIf="totalViajes === 0">Sin actividad aún</ng-container>
+        <ng-container *ngIf="totalViajes > 0">este período</ng-container>
+      </div>
+    </div>
+
+    <!-- Calificación -->
+    <div style="padding:24px;background:var(--accent);color:#1A0E00;border-radius:24px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;opacity:0.7">Calificación</div>
+      <div class="ur-display ur-mono" style="font-size:56px;font-weight:700;margin-top:14px;line-height:0.92;letter-spacing:-0.04em">
+        {{ promedio > 0 ? (promedio | number:'1.1-1') : '—' }}
+      </div>
+      <div style="display:flex;align-items:center;gap:3px;margin-top:8px">
+        <ng-container *ngFor="let filled of starsArray(promedio)">
+          <svg width="14" height="14" viewBox="0 0 24 24" [attr.fill]="filled ? '#1A0E00' : 'none'" stroke="#1A0E00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [style.opacity]="filled ? 1 : 0.3"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+        </ng-container>
+        <span style="font-size:11.5px;font-weight:700;margin-left:6px;opacity:0.75">
+          · {{ promedioTotal }} reseña{{ promedioTotal !== 1 ? 's' : '' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ QUICK ACTIONS ══════════════════════════════════════════════════ -->
+  <ng-container *ngIf="!auth.hasRole('administrador')">
+    <div style="margin-top:22px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:12px">
+
+      <!-- Ver rutas (big dark) -->
+      <a routerLink="/rutas"
+         style="padding:20px;border-radius:20px;background:var(--text);color:var(--bg);display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--accent);color:#1A0E00;display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">Ver rutas disponibles</div>
+          <div style="font-size:12px;opacity:0.6;margin-top:4px">Conductores disponibles cerca</div>
+          <div style="margin-top:10px;font-size:12.5px;font-weight:700;color:var(--accent)">Ver mapa →</div>
+        </div>
+      </a>
+
+      <!-- Programar viaje -->
+      <a routerLink="/calendario"
+         style="padding:20px;border-radius:20px;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">Programar viaje</div>
+          <div style="font-size:12px;opacity:0.7;margin-top:4px">Reserva con anticipación</div>
+        </div>
+      </a>
+
+      <!-- Mis rutas -->
+      <a routerLink="/rutas"
+         style="padding:20px;border-radius:20px;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">Mis rutas</div>
+          <div style="font-size:12px;opacity:0.7;margin-top:4px">{{ rutasGuardadas }} guardada{{ rutasGuardadas !== 1 ? 's' : '' }}</div>
+        </div>
+      </a>
+
+      <!-- Calificar / Calificaciones -->
+      <ng-container *ngIf="ultimoViajeFinalizado && !auth.hasRole('conductor')">
+        <button (click)="calificarViaje(ultimoViajeFinalizado!)"
+          style="padding:20px;border-radius:20px;background:var(--uam-orange-100);color:var(--text);border:1px solid transparent;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:130px;cursor:pointer;text-align:left;font-family:inherit">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--accent);color:#1A0E00;display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+          </div>
+          <div>
+            <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">Calificar último viaje</div>
+            <div style="font-size:12px;font-weight:700;margin-top:4px;color:var(--uam-orange-700)">Pendiente</div>
+          </div>
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="!ultimoViajeFinalizado || auth.hasRole('conductor')">
+        <a routerLink="/calificaciones"
+           style="padding:20px;border-radius:20px;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:130px;text-decoration:none">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+          </div>
+          <div>
+            <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;line-height:1.15">Mis calificaciones</div>
+            <div style="font-size:12px;opacity:0.7;margin-top:4px">Ver reseñas</div>
+          </div>
+        </a>
+      </ng-container>
+
+    </div>
+  </ng-container>
+
+  <!-- ══ ADMIN QUICK ACTIONS ════════════════════════════════════════════ -->
+  <ng-container *ngIf="auth.hasRole('administrador')">
+    <div style="margin-top:22px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:12px">
+      <a routerLink="/viajes" style="padding:20px;border-radius:20px;background:var(--text);color:var(--bg);display:flex;flex-direction:column;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--accent);color:#1A0E00;display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:22px;font-weight:700;letter-spacing:-0.02em">Gestionar viajes</div>
+          <div style="font-size:12px;opacity:0.6;margin-top:4px">{{ viajesActivos }} activos ahora</div>
+        </div>
+      </a>
+      <a routerLink="/usuarios" style="padding:20px;border-radius:20px;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);display:flex;flex-direction:column;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em">Usuarios</div>
+          <div style="font-size:12px;opacity:0.7;margin-top:4px">Gestionar cuentas</div>
+        </div>
+      </a>
+      <a routerLink="/reportes" style="padding:20px;border-radius:20px;background:var(--uam-orange-100);color:var(--text);border:1px solid transparent;display:flex;flex-direction:column;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--accent);color:#1A0E00;display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em">Reportes</div>
+          <div style="font-size:12px;font-weight:700;color:var(--uam-orange-700);margin-top:4px">Ver estadísticas</div>
+        </div>
+      </a>
+      <a routerLink="/calificaciones" style="padding:20px;border-radius:20px;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);display:flex;flex-direction:column;gap:12px;min-height:130px;text-decoration:none">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+        </div>
+        <div>
+          <div class="ur-display" style="font-size:16px;font-weight:700;letter-spacing:-0.02em">Calificaciones</div>
+          <div style="font-size:12px;opacity:0.7;margin-top:4px">Ver reseñas</div>
+        </div>
+      </a>
+    </div>
+  </ng-container>
+
+  <!-- ══ VIAJES RECIENTES ════════════════════════════════════════════════ -->
+  <div *ngIf="viajesRecientes.length > 0" style="margin-top:32px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div>
+        <div class="ur-display" style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:0.14em;text-transform:uppercase">Tus viajes recientes</div>
+        <div class="ur-display" style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.025em;margin-top:6px">{{ totalViajes }} viaje{{ totalViajes !== 1 ? 's' : '' }} en total</div>
+      </div>
+      <a routerLink="/viajes" style="font-size:13px;font-weight:700;color:var(--text);text-decoration:none">Ver todos →</a>
+    </div>
+
+    <div style="margin-top:18px">
+      <div *ngFor="let viaje of viajesRecientes; let i = index"
+           style="display:grid;grid-template-columns:40px 110px 1fr 120px 130px;gap:16px;align-items:center;padding:16px 12px;border-top:1px solid var(--border)">
+        <div class="ur-display" style="font-size:14px;font-weight:800;color:var(--text-3)">{{ (i+1).toString().padStart(2,'0') }}</div>
+        <div style="font-size:12.5px;color:var(--text-3);font-weight:600">{{ viaje.fecha_solicitud | date:'dd/MM · HH:mm' }}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">
+          {{ firstPart(viaje.ruta?.origen_descripcion) }}
+          <span style="color:var(--text-3);margin:0 8px">→</span>
+          {{ firstPart(viaje.ruta?.destino_descripcion) }}
+        </div>
+        <span [class]="'badge-' + viaje.estado">{{ viaje.estado.replace('_',' ') }}</span>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">
+          <div class="ur-display ur-mono" style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.015em">
+            ${{ viaje.precio ? formatMonto(viaje.precio) : '—' }}
+          </div>
+          <button *ngIf="!auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.conductor"
             (click)="calificarViaje(viaje)"
-            class="flex items-center gap-1 text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-2.5 py-1 rounded-full transition-colors">
-            <span>★</span> Calificar
+            style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--accent);color:#1A0E00;border:none;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#1A0E00" stroke="none"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+            Calificar
           </button>
-          <!-- Botón calificar: conductor califica pasajero -->
-          <button
-            *ngIf="auth.hasRole('conductor') && viaje.estado === 'finalizado' && viaje.pasajero && viaje.conductor?.id === auth.currentUser?.id"
-            (click)="calificarViaje(viaje)"
-            class="flex items-center gap-1 text-xs font-medium text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-2.5 py-1 rounded-full transition-colors">
-            <span>★</span> Calificar
-          </button>
-          <span [class]="'badge-' + viaje.estado">{{ viaje.estado }}</span>
         </div>
       </div>
     </div>
