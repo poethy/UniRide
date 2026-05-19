@@ -1,4 +1,13 @@
-<div style="display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:18px 36px 0">
+<div style="display:flex;align-items:center;gap:14px;padding:18px 36px 0">
+
+  <!-- Hamburger (mobile only) -->
+  <button class="ur-hamburger" (click)="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h18M3 12h18M3 18h18"/>
+    </svg>
+  </button>
+
+  <div style="display:flex;align-items:center;gap:14px;margin-left:auto">
 
   <!-- Bell -->
   <a routerLink="/notificaciones"
@@ -22,6 +31,8 @@
         <path d="M6 9l6 6 6-6"/>
       </svg>
     </button>
+  </div>
+
   </div>
 
 </div>

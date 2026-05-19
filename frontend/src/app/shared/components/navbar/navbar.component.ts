@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificacionesService } from '../../../core/services/notificaciones.service';
+import { UiStateService } from '../../../core/services/ui-state.service';
 import { Usuario } from '../../../core/models';
 
 @Component({
@@ -15,6 +16,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     public  auth:    AuthService,
     private notiSvc: NotificacionesService,
+    private ui:      UiStateService,
   ) {}
 
   ngOnInit(): void {
@@ -24,4 +26,5 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void { this.auth.logout(); }
+  toggleSidebar(): void { this.ui.toggle(); }
 }
