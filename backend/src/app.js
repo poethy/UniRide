@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const morgan = require('morgan');
+const pinoHttp = require('pino-http');
 
+const logger = require('./utils/logger');
 const errorMiddleware = require('./middlewares/error.middleware');
 
 const authRoutes           = require('./routes/auth.routes');
@@ -17,6 +18,9 @@ const reportesRoutes       = require('./routes/reportes.routes');
 
 const app = express();
 
+// Express está detrás de un proxy en Railway/Vercel: necesario para rate-limit por IP real
+app.set('trust proxy', 1);
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : ['http://localhost:4200'];
@@ -24,15 +28,22 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requests sin origin (Postman, mobile, etc.)
+    // Permitir requests sin origin (Postman, mobile, health checks).
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS bloqueado: ${origin}`));
+    // No lanzar excepción: devolver false → cors responde 403 limpio.
+    logger.warn({ origin }, 'CORS bloqueado');
+    return callback(null, false);
   },
   credentials: true,
 }));
-app.use(morgan('dev'));
-app.use(express.json());
+
+app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/health' || req.url === '/api/health' } }));
+app.use(express.json({ limit: '1mb' }));
+
+// Healthcheck (Railway / load balancers)
+app.get('/health', (req, res) => res.json({ ok: true, status: 'up', ts: Date.now() }));
+app.get('/api/health', (req, res) => res.json({ ok: true, status: 'up', ts: Date.now() }));
 
 app.use('/api/auth',           authRoutes);
 app.use('/api/usuarios',       usuariosRoutes);

@@ -2,7 +2,9 @@ const prisma = require('../utils/prisma');
 const bcrypt = require('bcryptjs');
 const { sign } = require('../utils/jwt');
 
-const ROLES_VALIDOS = [1, 2, 3];
+// Solo conductor (2) y pasajero (3) pueden auto-registrarse.
+// El rol administrador (1) NUNCA es auto-asignable desde un registro público.
+const ROLES_PUBLICOS = [2, 3];
 
 async function register(data) {
   const { nombre, apellido, email, password, telefono, universidad, codigo_estudiantil, rol_id } = data;
@@ -10,7 +12,7 @@ async function register(data) {
   const existe = await prisma.usuarios.findUnique({ where: { email } });
   if (existe) throw { status: 409, message: 'El email ya está registrado' };
 
-  const rolAsignado = ROLES_VALIDOS.includes(Number(rol_id)) ? Number(rol_id) : 3;
+  const rolAsignado = ROLES_PUBLICOS.includes(Number(rol_id)) ? Number(rol_id) : 3;
   const password_hash = await bcrypt.hash(password, 10);
 
   const usuario = await prisma.usuarios.create({

@@ -16,9 +16,16 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) this.auth.logout();
+        if (err.status === 401 && !this.isAuthEndpoint(req.url)) {
+          this.auth.logout();
+        }
         return throwError(() => err);
       })
     );
+  }
+
+  private isAuthEndpoint(url: string): boolean {
+    // No cerrar sesión por 401 cuando el propio endpoint de auth devuelve credenciales inválidas.
+    return /\/api\/auth\/(login|register)\b/.test(url);
   }
 }

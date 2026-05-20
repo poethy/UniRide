@@ -1,14 +1,20 @@
 const prisma = require('../utils/prisma');
 
-async function listarPorUsuario(usuarioId) {
+async function listarPorUsuario(usuarioId, pag = null) {
+  const where = {
+    viaje: { OR: [{ pasajero_id: usuarioId }, { conductor_id: usuarioId }] },
+  };
+  const include = { viaje: { include: { ruta: true } } };
+
+  if (pag && pag.paginated) {
+    const [items, total] = await Promise.all([
+      prisma.pagos.findMany({ where, include, orderBy: { created_at: 'desc' }, skip: pag.skip, take: pag.take }),
+      prisma.pagos.count({ where }),
+    ]);
+    return { items, total };
+  }
   return prisma.pagos.findMany({
-    where: {
-      viaje: {
-        OR: [{ pasajero_id: usuarioId }, { conductor_id: usuarioId }],
-      },
-    },
-    include: { viaje: { include: { ruta: true } } },
-    orderBy: { created_at: 'desc' },
+    where, include, orderBy: { created_at: 'desc' }, take: pag ? pag.take : 500,
   });
 }
 
@@ -43,10 +49,17 @@ async function recargarBilletera(usuarioId, monto) {
   });
 }
 
-async function historialTransacciones(usuarioId) {
+async function historialTransacciones(usuarioId, pag = null) {
+  const where = { usuario_id: usuarioId };
+  if (pag && pag.paginated) {
+    const [items, total] = await Promise.all([
+      prisma.transacciones.findMany({ where, orderBy: { created_at: 'desc' }, skip: pag.skip, take: pag.take }),
+      prisma.transacciones.count({ where }),
+    ]);
+    return { items, total };
+  }
   return prisma.transacciones.findMany({
-    where: { usuario_id: usuarioId },
-    orderBy: { created_at: 'desc' },
+    where, orderBy: { created_at: 'desc' }, take: pag ? pag.take : 500,
   });
 }
 

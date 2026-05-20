@@ -1,17 +1,24 @@
 const svc = require('../services/viajes.service');
 const { ok, created, fail } = require('../utils/response');
-
-// Almacén en memoria de ubicaciones activas: Map<viajeId, {lat, lng, timestamp}>
-const ubicacionesActivas = new Map();
+const ubicacionesActivas = require('../utils/ubicaciones-store');
+const pagination = require('../utils/pagination');
 
 const listar = async (req, res, next) => {
   try {
     const { pasajero_id, conductor_id, estado } = req.query;
-    return ok(res, await svc.listar({
+    const pag = pagination.parse(req.query);
+    const result = await svc.listar({
       pasajero_id:  pasajero_id  ? Number(pasajero_id)  : undefined,
       conductor_id: conductor_id ? Number(conductor_id) : undefined,
       estado,
-    }));
+    }, pag);
+
+    if (pag.paginated) {
+      return ok(res, pagination.envelope({
+        items: result.items, total: result.total, page: pag.page, perPage: pag.perPage,
+      }));
+    }
+    return ok(res, result);
   } catch (err) { next(err); }
 };
 
@@ -75,7 +82,7 @@ const actualizarUbicacion = async (req, res, next) => {
     if (viaje.estado !== 'en_curso')
       return fail(res, 'El viaje no está en curso', 409);
 
-    ubicacionesActivas.set(id, { lat: parseFloat(lat), lng: parseFloat(lng), timestamp: Date.now() });
+    ubicacionesActivas.set(id, { lat: parseFloat(lat), lng: parseFloat(lng) });
     return ok(res, { updated: true });
   } catch (err) {
     if (err.status) return fail(res, err.message, err.status);
@@ -86,7 +93,7 @@ const actualizarUbicacion = async (req, res, next) => {
 const obtenerUbicacion = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const ubicacion = ubicacionesActivas.get(id) ?? null;
+    const ubicacion = ubicacionesActivas.get(id);
     return ok(res, ubicacion);
   } catch (err) { next(err); }
 };
